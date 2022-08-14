@@ -14,15 +14,13 @@ struct Params {
 }
 
 fn main() {
-    smol::block_on(async {
-        if let Err(error) = cli(Params::parse()).await {
-            eprintln!("Error: {:#}", error);
-            exit(1);
-        }
-    })
+    if let Err(error) = cli(Params::parse()) {
+        eprintln!("Error: {:#}", error);
+        exit(1);
+    }
 }
 
-async fn cli(params: Params) -> anyhow::Result<()> {
+fn cli(params: Params) -> anyhow::Result<()> {
     let filter = match params.verbose {
         3.. => LevelFilter::Trace,
         2 => LevelFilter::Debug,
@@ -30,22 +28,9 @@ async fn cli(params: Params) -> anyhow::Result<()> {
         0 => LevelFilter::Warn,
     };
 
-    // Configure different logging for a module (sqlx::query here).
     CombinedLogger::init(vec![
         // Default logger
-        new_term_logger(
-            filter,
-            new_logger_config()
-                .add_filter_ignore_str("sqlx::query")
-                .build(),
-        ),
-        // Logger for sqlx::query
-        new_term_logger(
-            LevelFilter::Warn,
-            new_logger_config()
-                .add_filter_allow_str("sqlx::query")
-                .build(),
-        ),
+        new_term_logger(filter, new_logger_config().build()),
     ])
     .unwrap();
 

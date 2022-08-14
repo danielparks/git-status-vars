@@ -2,7 +2,7 @@
 name = "git_summary"
 version = "0.1.0"
 authors = ["Daniel Parks <oss-git_summary@demonhorse.org>"]
-description = ""
+description = "Summarize information about the current git repo"
 homepage = "https://github.com/danielparks/git_summary"
 repository = "https://github.com/danielparks/git_summary"
 readme = "README.md"
@@ -19,4 +19,3 @@ anyhow = "1.0.44"
 clap = { version = "3.2.15", features = ["derive"] }
 log = "0.4.14"
 simplelog = "0.10.2"
-smol = "1.2.5"
