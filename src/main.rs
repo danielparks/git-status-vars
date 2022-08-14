@@ -3,6 +3,7 @@ use simplelog::{
     ColorChoice, CombinedLogger, Config, ConfigBuilder, LevelFilter,
     TermLogger, TerminalMode,
 };
+use std::path::PathBuf;
 use std::process::exit;
 
 #[derive(Debug, clap::Parser)]
@@ -11,11 +12,15 @@ struct Params {
     /// Verbosity (may be repeated up to three times)
     #[clap(short, long, parse(from_occurrences))]
     verbose: u8,
+
+    /// The repository to summarize
+    #[clap(default_value=".", parse(from_os_str))]
+    repository: PathBuf,
 }
 
 fn main() {
     if let Err(error) = cli(Params::parse()) {
-        eprintln!("Error: {:#}", error);
+        eprintln!("# Error: {:#}", error);
         exit(1);
     }
 }
@@ -33,6 +38,8 @@ fn cli(params: Params) -> anyhow::Result<()> {
         new_term_logger(filter, new_logger_config().build()),
     ])
     .unwrap();
+
+    git_summary::head_info(params.repository)?;
 
     Ok(())
 }
