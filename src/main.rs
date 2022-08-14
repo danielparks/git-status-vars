@@ -39,7 +39,8 @@ fn cli(params: Params) -> anyhow::Result<()> {
     ])
     .unwrap();
 
-    print!("{}", git_summary::head_info(params.repository)?);
+    let repository = git_repository::discover(params.repository)?;
+    print!("{}", git_summary::head_info(&repository)?);
 
     Ok(())
 }
