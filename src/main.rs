@@ -14,7 +14,7 @@ struct Params {
     verbose: u8,
 
     /// The repository to summarize
-    #[clap(default_value=".", parse(from_os_str))]
+    #[clap(default_value = ".", parse(from_os_str))]
     repository: PathBuf,
 }
 
@@ -39,7 +39,7 @@ fn cli(params: Params) -> anyhow::Result<()> {
     ])
     .unwrap();
 
-    git_summary::head_info(params.repository)?;
+    print!("{}", git_summary::head_info(params.repository)?);
 
     Ok(())
 }
