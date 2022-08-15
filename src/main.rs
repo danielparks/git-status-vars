@@ -57,8 +57,9 @@ fn cli(params: Params) -> anyhow::Result<()> {
 }
 
 fn summarize_repository(repository: &Repository) -> anyhow::Result<()> {
-    git_summary::print_reference_trail(&repository, "HEAD");
-    dbg!(&repository.state()); // FIXME env=
+    println!("repo_state={:?}", &repository.state());
+    println!("repo_empty={:?}", &repository.is_empty()?);
+    println!("repo_bare={:?}", &repository.is_bare());
     print!("{}", git_summary::head_info(&repository)?);
     git_summary::tree_info(&repository)?;
 

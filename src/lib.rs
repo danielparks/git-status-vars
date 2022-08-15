@@ -94,9 +94,6 @@ fn write_key_value(
 
 /// Print information about the HEAD of the repository at path.
 pub fn head_info(repository: &Repository) -> anyhow::Result<Head> {
-    dbg!(repository.is_empty()?);
-    dbg!(repository.is_bare());
-    dbg!(repository.head_detached()?);
     let mut current = "HEAD".to_string();
     let mut head = Head::default();
     loop {
