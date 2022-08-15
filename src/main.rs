@@ -14,9 +14,9 @@ struct Params {
     #[clap(short, long, parse(from_occurrences))]
     verbose: u8,
 
-    /// The repository to summarize
-    #[clap(default_value = ".", parse(from_os_str))]
-    repository: PathBuf,
+    /// The repositories to summarize
+    #[clap(parse(from_os_str))]
+    repositories: Vec<PathBuf>,
 }
 
 fn main() {
@@ -40,7 +40,24 @@ fn cli(params: Params) -> anyhow::Result<()> {
     ])
     .unwrap();
 
-    let repository = Repository::open_from_env()?;
+    if params.repositories.is_empty() {
+        summarize_repository(&Repository::open_from_env()?)?;
+    } else if params.repositories.len() == 1 {
+        summarize_repository(&Repository::open(&params.repositories[0])?)?;
+    } else {
+        let mut blank = "";
+        for repo_path in params.repositories {
+            println!("{}# {}", blank, repo_path.display());
+            blank = "\n";
+            summarize_repository(&Repository::open(repo_path)?)?;
+        }
+    }
+
+    Ok(())
+}
+
+fn summarize_repository(repository: &Repository) -> anyhow::Result<()> {
+    git_summary::print_reference_trail(&repository, "HEAD");
     dbg!(&repository.state()); // FIXME env=
     print!("{}", git_summary::head_info(&repository)?);
     git_summary::tree_info(&repository)?;
