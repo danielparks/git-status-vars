@@ -43,17 +43,18 @@ pub fn head_info(repository: &Repository) -> anyhow::Result<Head> {
     // to the other.
 
     Ok(Head {
-        full_name: head.name().unwrap_or("").to_string(),
-        short_name: head.shorthand().unwrap_or("").to_string(),
-        hash: head
-            .target()
-            .map(|t| t.to_string())
-            .unwrap_or("".to_string()),
-        kind: head
-            .kind()
-            .map(|k| format!("{:?}", k))
-            .unwrap_or("".to_string()),
+        full_name: stringify_option(head.name()),
+        short_name: stringify_option(head.shorthand()),
+        hash: stringify_option(head.target()),
+        kind: stringify_option(head.kind()),
     })
+}
+
+fn stringify_option<S>(s: Option<S>) -> String
+where
+    S: fmt::Display,
+{
+    s.map(|s| s.to_string()).unwrap_or("".to_string())
 }
 
 pub fn tree_info(repository: &Repository) -> anyhow::Result<()> {
