@@ -1,5 +1,6 @@
 use clap::Parser;
 use git2::Repository;
+use git_summary::{shell_quote, shell_quote_debug};
 use simplelog::{
     ColorChoice, CombinedLogger, Config, ConfigBuilder, LevelFilter,
     TermLogger, TerminalMode,
@@ -57,9 +58,9 @@ fn cli(params: Params) -> anyhow::Result<()> {
 }
 
 fn summarize_repository(repository: &Repository) -> anyhow::Result<()> {
-    println!("repo_state={:?}", &repository.state());
-    println!("repo_empty={:?}", &repository.is_empty()?);
-    println!("repo_bare={:?}", &repository.is_bare());
+    println!("repo_state={}", shell_quote_debug(&repository.state()));
+    println!("repo_empty={}", shell_quote(&repository.is_empty()?));
+    println!("repo_bare={}", shell_quote(&repository.is_bare()));
     print!("{}", git_summary::head_info(&repository)?);
     git_summary::tree_info(&repository)?;
 

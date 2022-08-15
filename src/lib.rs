@@ -4,33 +4,47 @@ use std::fmt;
 
 #[derive(Debug, Default)]
 pub struct Reference {
-    pub full_name: String,
-    pub short_name: String,
+    pub name: String,
     pub kind: String,
     pub error: String,
 }
 
 impl Reference {
-    pub fn new<N, K, E>(full_name: N, kind: K, error: E) -> Self
+    pub fn new<N, K>(name: N, kind: K) -> Self
+    where
+        N: AsRef<str>,
+        K: AsRef<str>,
+    {
+        Reference {
+            name: name.as_ref().to_string(),
+            kind: kind.as_ref().to_string(),
+            error: "".to_string(),
+        }
+    }
+
+    pub fn new_with_error<N, K, E>(name: N, kind: K, error: E) -> Self
     where
         N: AsRef<str>,
         K: AsRef<str>,
         E: fmt::Debug,
     {
         Reference {
-            full_name: full_name.as_ref().to_string(),
-            short_name: display_option(shorten(full_name.as_ref())),
+            name: name.as_ref().to_string(),
             kind: kind.as_ref().to_string(),
             error: format!("{:?}", error),
         }
     }
 
-    pub fn symbolic(full_name: &str) -> Self {
-        Reference::new(full_name, "symbolic", "")
+    pub fn symbolic(name: &str) -> Self {
+        Reference::new(name, "symbolic")
     }
 
-    pub fn direct(full_name: &str) -> Self {
-        Reference::new(full_name, "direct", "")
+    pub fn direct(name: &str) -> Self {
+        Reference::new(name, "direct")
+    }
+
+    pub fn short(&self) -> &str {
+        shorten(&self.name).unwrap_or(&self.name)
     }
 
     // Output the reference information with a prefix (e.g. "ref_").
@@ -39,8 +53,8 @@ impl Reference {
         f: &mut fmt::Formatter<'_>,
         prefix: impl fmt::Display,
     ) -> fmt::Result {
-        write_key_value(f, &prefix, "name", &self.full_name)?;
-        write_key_value(f, &prefix, "short", &self.short_name)?;
+        write_key_value(f, &prefix, "name", &self.name)?;
+        write_key_value(f, &prefix, "short", &self.short())?;
         write_key_value(f, &prefix, "kind", &self.kind)?;
         write_key_value(f, &prefix, "error", &self.error)?;
 
@@ -67,9 +81,9 @@ impl Head {
         f: &mut fmt::Formatter<'_>,
         prefix: impl fmt::Display,
     ) -> fmt::Result {
-        write_key_value(f, &prefix, "ref_length", self.trail.len()-1)?;
+        write_key_value(f, &prefix, "ref_length", self.trail.len() - 1)?;
         for (i, reference) in self.trail[1..].iter().enumerate() {
-            reference.write_env(f, format!("{}ref{}_", &prefix, i+1))?;
+            reference.write_env(f, format!("{}ref{}_", &prefix, i + 1))?;
         }
         write_key_value(f, &prefix, "hash", &self.hash)?;
 
@@ -83,13 +97,21 @@ impl fmt::Display for Head {
     }
 }
 
-fn write_key_value(
+pub fn shell_quote(value: impl fmt::Display) -> String {
+    shell_words::quote(&format!("{}", value)).into()
+}
+
+pub fn shell_quote_debug(value: impl fmt::Debug) -> String {
+    shell_words::quote(&format!("{:?}", value)).into()
+}
+
+pub fn write_key_value(
     f: &mut fmt::Formatter<'_>,
     prefix: impl fmt::Display,
     key: impl fmt::Display,
     value: impl fmt::Display,
 ) -> fmt::Result {
-    write!(f, "{}{}={}\n", prefix, key, value)
+    write!(f, "{}{}={}\n", prefix, key, shell_quote(value))
 }
 
 /// Print information about the HEAD of the repository at path.
@@ -119,13 +141,13 @@ pub fn head_info(repository: &Repository) -> anyhow::Result<Head> {
                     head.trail.push(Reference::new(
                         &display_option(reference.name()),
                         "unknown",
-                        "",
                     ));
                     break;
                 }
             },
             Err(error) => {
-                head.trail.push(Reference::new(current, "", error));
+                head.trail
+                    .push(Reference::new_with_error(current, "", error));
                 break;
             }
         };
