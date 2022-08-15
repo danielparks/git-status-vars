@@ -3,9 +3,60 @@ use git2::Repository;
 use std::fmt;
 
 #[derive(Debug, Default)]
-pub struct Head {
+pub struct Reference {
     pub full_name: String,
     pub short_name: String,
+    pub kind: String,
+    pub error: String,
+}
+
+impl Reference {
+    pub fn new<N, K, E>(full_name: N, kind: K, error: E) -> Self
+    where
+        N: AsRef<str>,
+        K: AsRef<str>,
+        E: fmt::Debug,
+    {
+        Reference {
+            full_name: full_name.as_ref().to_string(),
+            short_name: display_option(shorten(full_name.as_ref())),
+            kind: kind.as_ref().to_string(),
+            error: format!("{:?}", error),
+        }
+    }
+
+    pub fn symbolic(full_name: &str) -> Self {
+        Reference::new(full_name, "symbolic", "")
+    }
+
+    pub fn direct(full_name: &str) -> Self {
+        Reference::new(full_name, "direct", "")
+    }
+
+    // Output the reference information with a prefix (e.g. "ref_").
+    pub fn write_env(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+        prefix: impl fmt::Display,
+    ) -> fmt::Result {
+        write_key_value(f, &prefix, "name", &self.full_name)?;
+        write_key_value(f, &prefix, "short", &self.short_name)?;
+        write_key_value(f, &prefix, "kind", &self.kind)?;
+        write_key_value(f, &prefix, "error", &self.error)?;
+
+        Ok(())
+    }
+}
+
+impl fmt::Display for Reference {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.write_env(f, "")
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct Head {
+    pub trail: Vec<Reference>,
     pub hash: String,
     pub kind: String,
 }
@@ -15,12 +66,14 @@ impl Head {
     pub fn write_env(
         &self,
         f: &mut fmt::Formatter<'_>,
-        prefix: &str,
+        prefix: impl fmt::Display,
     ) -> fmt::Result {
-        write!(f, "{}name={}\n", prefix, self.full_name)?;
-        write!(f, "{}short={}\n", prefix, self.short_name)?;
-        write!(f, "{}hash={}\n", prefix, self.hash)?;
-        write!(f, "{}kind={}\n", prefix, self.kind)?;
+        write_key_value(f, &prefix, "ref_length", self.trail.len())?;
+        for (i, reference) in self.trail.iter().enumerate() {
+            reference.write_env(f, format!("{}ref{}_", &prefix, i))?;
+        }
+        write_key_value(f, &prefix, "hash", &self.hash)?;
+        write_key_value(f, &prefix, "kind", &self.kind)?;
 
         Ok(())
     }
@@ -32,70 +85,58 @@ impl fmt::Display for Head {
     }
 }
 
+fn write_key_value(
+    f: &mut fmt::Formatter<'_>,
+    prefix: impl fmt::Display,
+    key: impl fmt::Display,
+    value: impl fmt::Display,
+) -> fmt::Result {
+    write!(f, "{}{}={}\n", prefix, key, value)
+}
+
 /// Print information about the HEAD of the repository at path.
 pub fn head_info(repository: &Repository) -> anyhow::Result<Head> {
-    let head = repository.find_reference("HEAD")?;
-
     dbg!(repository.is_empty()?);
     dbg!(repository.is_bare());
     dbg!(repository.head_detached()?);
-    dbg!(head.name());
-    dbg!(head.target());
-    dbg!(head.target_peel());
-    dbg!(head.symbolic_target());
-    dbg!(head.kind());
-    // FIXME probably going to need to improve this
-    // https://docs.rs/git2/latest/git2/struct.Reference.html
-    // dbg!(head.target());
-    // dbg!(head.target_peel());
-    // dbg!(head.symbolic_target());
-    // FIXME? can't distinguish between master and main when one is a symref
-    // to the other.
-
-    match head.kind() {
-        Some(ReferenceType::Direct) => {
-            // Detached HEAD
-            Ok(Head {
-                hash: display_option(head.target()),
-                kind: "direct".to_string(),
-                ..Head::default()
-            })
-        }
-        Some(ReferenceType::Symbolic) => {
-            let target = head
-                .symbolic_target()
-                .expect("Symbolic ref should have symbolic target");
-            match repository.find_reference(target) {
-                Ok(reference) => Ok(Head {
-                    full_name: display_option(reference.name()),
-                    short_name: display_option(reference.shorthand()),
-                    hash: display_option(reference.target()),
-                    kind: "symbolic".to_string(),
-                    ..Head::default()
-                }),
-                Err(error) => {
-                    // Invalid reference?
-                    dbg!(error);
-                    Ok(Head {
-                        full_name: target.to_string(),
-                        // FIXME calculate short_name?
-                        kind: "symbolic".to_string(),
-                        ..Head::default()
-                    })
+    let mut current = "HEAD".to_string();
+    let mut head = Head::default();
+    loop {
+        match repository.find_reference(&current) {
+            Ok(reference) => match reference.kind() {
+                Some(ReferenceType::Direct) => {
+                    head.trail.push(Reference::direct(&display_option(
+                        reference.name(),
+                    )));
+                    head.hash = display_option(reference.target());
+                    break;
                 }
+                Some(ReferenceType::Symbolic) => {
+                    head.trail.push(Reference::symbolic(&display_option(
+                        reference.name(),
+                    )));
+                    let target = reference
+                        .symbolic_target()
+                        .expect("Symbolic ref should have symbolic target");
+                    current = target.to_string();
+                }
+                None => {
+                    head.trail.push(Reference::new(
+                        &display_option(reference.name()),
+                        "unknown",
+                        "",
+                    ));
+                    break;
+                }
+            },
+            Err(error) => {
+                head.trail.push(Reference::new(current, "", error));
+                break;
             }
-        }
-        None => {
-            // Uhhhh.
-            Ok(Head {
-                full_name: display_option(head.name()),
-                short_name: display_option(head.shorthand()),
-                hash: display_option(head.target()),
-                kind: "unknown".to_string(),
-                ..Head::default()
-            })
-        }
+        };
     }
+
+    Ok(head)
 }
 
 /// Print information about the HEAD of the repository at path.
