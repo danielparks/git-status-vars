@@ -58,7 +58,6 @@ impl fmt::Display for Reference {
 pub struct Head {
     pub trail: Vec<Reference>,
     pub hash: String,
-    pub kind: String,
 }
 
 impl Head {
@@ -68,12 +67,11 @@ impl Head {
         f: &mut fmt::Formatter<'_>,
         prefix: impl fmt::Display,
     ) -> fmt::Result {
-        write_key_value(f, &prefix, "ref_length", self.trail.len())?;
-        for (i, reference) in self.trail.iter().enumerate() {
-            reference.write_env(f, format!("{}ref{}_", &prefix, i))?;
+        write_key_value(f, &prefix, "ref_length", self.trail.len()-1)?;
+        for (i, reference) in self.trail[1..].iter().enumerate() {
+            reference.write_env(f, format!("{}ref{}_", &prefix, i+1))?;
         }
         write_key_value(f, &prefix, "hash", &self.hash)?;
-        write_key_value(f, &prefix, "kind", &self.kind)?;
 
         Ok(())
     }
@@ -81,7 +79,7 @@ impl Head {
 
 impl fmt::Display for Head {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.write_env(f, "")
+        self.write_env(f, "head_")
     }
 }
 
