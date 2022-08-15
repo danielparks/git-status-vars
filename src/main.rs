@@ -1,4 +1,5 @@
 use clap::Parser;
+use git2::Repository;
 use simplelog::{
     ColorChoice, CombinedLogger, Config, ConfigBuilder, LevelFilter,
     TermLogger, TerminalMode,
@@ -39,7 +40,8 @@ fn cli(params: Params) -> anyhow::Result<()> {
     ])
     .unwrap();
 
-    let repository = git_repository::discover(params.repository)?;
+    let repository = Repository::open_from_env()?;
+    dbg!(&repository.state()); // FIXME env=
     print!("{}", git_summary::head_info(&repository)?);
     git_summary::tree_info(&repository)?;
 
