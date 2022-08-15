@@ -1,5 +1,9 @@
+use bstr::{BString, ByteVec};
 use git_repository::head::Kind;
+use git_repository::object::tree::EntryRef;
+use git_repository::Tree;
 use std::fmt;
+use std::fs;
 use std::path::Path;
 
 #[derive(Debug, Default)]
@@ -142,4 +146,39 @@ pub fn head_info(
     }
 
     Ok(output)
+}
+
+pub fn tree_info(
+    repository: &git_repository::Repository,
+) -> anyhow::Result<()> {
+    let tree = repository.head()?.peel_to_commit_in_place()?.tree()?;
+
+    tree_compare(&repository, &tree, ".")?;
+
+    Ok(())
+}
+
+fn tree_compare(
+    repository: &git_repository::Repository,
+    tree: &Tree,
+    path: impl AsRef<Path>,
+) -> anyhow::Result<()> {
+    // FIXME: is this always sorted? We could improve performance
+    let tree_entries: Vec<EntryRef> = tree.iter().map(|e| e.unwrap()).collect();
+
+    let real_contents = fs::read_dir(path)?;
+    for entry in real_contents {
+        // FIXME just skip on error?
+        let entry = entry?;
+        // FIXME how does git handle non-UTF-8
+        let file_name =
+            Vec::from_os_string(entry.file_name()).expect("valid UTF-8");
+        let in_tree = tree_entries.iter().any(|e| e.filename() == &file_name);
+        println!("{} {:?}", in_tree, BString::from(file_name));
+    }
+    for entry in tree_entries {
+        println!("{:?} {:?} {}", entry.id(), entry.mode(), entry.filename());
+        //dbg!(repository.find_object(entry.id())?);
+    }
+    Ok(())
 }

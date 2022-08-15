@@ -798,6 +798,7 @@ name = "git_summary"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bstr",
  "clap",
  "git-ref",
  "git-repository",
