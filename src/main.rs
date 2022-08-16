@@ -62,7 +62,7 @@ fn summarize_repository(repository: &Repository) -> anyhow::Result<()> {
     println!("repo_empty={}", shell_quote(&repository.is_empty()?));
     println!("repo_bare={}", shell_quote(&repository.is_bare()));
     print!("{}", git_summary::head_info(&repository)?);
-    git_summary::tree_info(&repository)?;
+    print!("{}", git_summary::count_changes(&repository)?);
 
     Ok(())
 }

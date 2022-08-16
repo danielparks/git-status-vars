@@ -1,6 +1,6 @@
 use git2::ReferenceType;
 use git2::Repository;
-use git2::{StatusOptions, StatusShow};
+use git2::{Status, StatusOptions, StatusShow};
 use std::fmt;
 
 #[derive(Debug, Default)]
@@ -174,15 +174,84 @@ where
     s.map(|s| s.to_string()).unwrap_or("".to_string())
 }
 
-pub fn tree_info(repository: &Repository) -> anyhow::Result<()> {
+#[derive(Debug, Default)]
+pub struct ChangeCounters {
+    pub untracked: usize,
+    pub unstaged: usize,
+    pub staged: usize,
+    pub conflicted: usize,
+}
+
+impl From<[usize; 4]> for ChangeCounters {
+    fn from(array: [usize; 4]) -> Self {
+        ChangeCounters {
+            untracked: array[0],
+            unstaged: array[1],
+            staged: array[2],
+            conflicted: array[3],
+        }
+    }
+}
+
+impl ChangeCounters {
+    // Output the tree change information with a prefix (e.g. "ref_").
+    pub fn write_env(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+        prefix: impl fmt::Display,
+    ) -> fmt::Result {
+        write_key_value(f, &prefix, "untracked_count", &self.untracked)?;
+        write_key_value(f, &prefix, "unstaged_count", &self.unstaged)?;
+        write_key_value(f, &prefix, "staged_count", &self.staged)?;
+        write_key_value(f, &prefix, "conflicted_count", &self.conflicted)?;
+
+        Ok(())
+    }
+}
+
+impl fmt::Display for ChangeCounters {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.write_env(f, "")
+    }
+}
+
+pub fn count_changes(
+    repository: &Repository,
+) -> anyhow::Result<ChangeCounters> {
     let mut options = StatusOptions::new();
     // exclude_submodules optional?
-    options.show(StatusShow::IndexAndWorkdir).include_untracked(true).exclude_submodules(true);
+    options
+        .show(StatusShow::IndexAndWorkdir)
+        .include_untracked(true)
+        .exclude_submodules(true);
     let statuses = repository.statuses(Some(&mut options))?;
+
+    let mut counters: [usize; 4] = [0; 4];
+    let buckets = [
+        // Untracked
+        Status::WT_NEW,
+        // Working tree changed
+        Status::WT_MODIFIED
+            | Status::WT_DELETED
+            | Status::WT_TYPECHANGE
+            | Status::WT_RENAMED,
+        // Staged
+        Status::INDEX_NEW
+            | Status::INDEX_MODIFIED
+            | Status::INDEX_DELETED
+            | Status::INDEX_RENAMED
+            | Status::INDEX_TYPECHANGE,
+        // Conflicted
+        Status::CONFLICTED,
+    ];
+
     for status in statuses.iter() {
-        dbg!(status.path());
-        dbg!(status.status());
+        for (i, bits) in buckets.iter().enumerate() {
+            if status.status().intersects(*bits) {
+                counters[i] += 1;
+            }
+        }
     }
 
-    Ok(())
+    Ok(ChangeCounters::from(counters))
 }
