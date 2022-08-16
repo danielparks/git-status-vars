@@ -157,45 +157,6 @@ pub fn head_info(repository: &Repository) -> anyhow::Result<Head> {
     Ok(head)
 }
 
-/// Print information about the HEAD of the repository at path.
-pub fn print_reference_trail(repository: &Repository, name: &str) {
-    let mut current = name.to_string();
-    loop {
-        let reference = match repository.find_reference(&current) {
-            Ok(reference) => reference,
-            Err(error) => {
-                println!("error: {:?}", error);
-                return;
-            }
-        };
-
-        match reference.kind() {
-            Some(ReferenceType::Direct) => {
-                println!("direct: {}", display_option(reference.target()));
-                return;
-            }
-            Some(ReferenceType::Symbolic) => {
-                let target = reference
-                    .symbolic_target()
-                    .expect("Symbolic ref should have symbolic target");
-                match shorten(target) {
-                    Some(short) => {
-                        println!("symbolic: {} ({})", target, short);
-                    }
-                    None => {
-                        println!("symbolic: {}", target);
-                    }
-                }
-                current = target.to_string();
-            }
-            None => {
-                println!("unknown: {}", display_option(reference.name()));
-                return;
-            }
-        }
-    }
-}
-
 // Shorten a reference if possible.
 //
 // Does not normalize the reference first. Requires UTF-8. Does not check for
