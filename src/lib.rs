@@ -1,5 +1,6 @@
 use git2::ReferenceType;
 use git2::Repository;
+use git2::Tree;
 use std::fmt;
 
 #[derive(Debug, Default)]
@@ -219,6 +220,13 @@ where
     s.map(|s| format!("{:?}", s)).unwrap_or("".to_string())
 }
 
+fn current_tree(repository: &Repository) -> Option<Tree> {
+    repository.head().ok()?.peel_to_tree().ok()
+}
+
 pub fn tree_info(repository: &Repository) -> anyhow::Result<()> {
+    let tree = current_tree(&repository);
+    let diff = repository.diff_tree_to_index(tree.as_ref(), None, None)?;
+    dbg!(diff.stats());
     Ok(())
 }
