@@ -1,7 +1,6 @@
-use git2::DiffOptions;
 use git2::ReferenceType;
 use git2::Repository;
-use git2::Tree;
+use git2::{StatusOptions, StatusShow};
 use std::fmt;
 
 #[derive(Debug, Default)]
@@ -214,32 +213,15 @@ where
     s.map(|s| s.to_string()).unwrap_or("".to_string())
 }
 
-fn debug_option<S>(s: Option<S>) -> String
-where
-    S: fmt::Debug,
-{
-    s.map(|s| format!("{:?}", s)).unwrap_or("".to_string())
-}
-
-fn current_tree(repository: &Repository) -> Option<Tree> {
-    repository.head().ok()?.peel_to_tree().ok()
-}
-
 pub fn tree_info(repository: &Repository) -> anyhow::Result<()> {
-    let tree = current_tree(&repository);
-    // git diff --staged
-    let diff = repository.diff_tree_to_index(tree.as_ref(), None, None)?;
-    dbg!(diff.stats())?;
-
-    // git diff --include-untracked (not a real option)
-    let mut options = DiffOptions::new();
-    options.include_untracked(true); // FIXME? .recurse_untracked_dirs(true)
-    let diff = repository.diff_index_to_workdir(None, Some(&mut options))?;
-    dbg!(diff.stats())?;
-
-    // git diff HEAD
-    let diff = repository.diff_tree_to_workdir_with_index(tree.as_ref(), None)?;
-    dbg!(diff.stats())?;
+    let mut options = StatusOptions::new();
+    // exclude_submodules optional?
+    options.show(StatusShow::IndexAndWorkdir).include_untracked(true).exclude_submodules(true);
+    let statuses = repository.statuses(Some(&mut options))?;
+    for status in statuses.iter() {
+        dbg!(status.path());
+        dbg!(status.status());
+    }
 
     Ok(())
 }
