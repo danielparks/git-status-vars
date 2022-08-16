@@ -15,6 +15,25 @@ ref=$(git symbolic-ref HEAD 2>/dev/null) \
   || ref="$(git show-ref --head --hash --abbrev HEAD | head -n1 2>/dev/null)"
 ```
 
+### Example output
+
+```
+❯ target/release/git_summary
+repo_state=Clean
+repo_empty=false
+repo_bare=false
+head_ref_length=1
+head_ref1_name=refs/heads/main
+head_ref1_short=main
+head_ref1_kind=direct
+head_ref1_error=''
+head_hash=6ea382037453bdbe6f514564c62ccc6d479dd551
+untracked_count=0
+unstaged_count=0
+staged_count=0
+conflicted_count=0
+```
+
 ## License
 
 This project dual-licensed under the Apache 2 and MIT licenses. You may choose
