@@ -75,6 +75,7 @@ pub struct Head {
     pub hash: String,
     pub ahead_of_upstream: Option<usize>,
     pub behind_upstream: Option<usize>,
+    pub upstream_error: String,
 }
 
 impl ShellVars for Head {
@@ -86,6 +87,7 @@ impl ShellVars for Head {
         out.write_var("hash", &self.hash);
         out.write_var("ahead", display_option(self.ahead_of_upstream));
         out.write_var("behind", display_option(self.behind_upstream));
+        out.write_var("upstream_error", &self.upstream_error);
     }
 }
 
@@ -128,9 +130,15 @@ pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
         };
     }
 
-    if let Ok(Some((ahead, behind))) = get_upstream_difference(&repository) {
-        head.ahead_of_upstream = Some(ahead);
-        head.behind_upstream = Some(behind);
+    match get_upstream_difference(&repository) {
+        Ok(Some((ahead, behind))) => {
+            head.ahead_of_upstream = Some(ahead);
+            head.behind_upstream = Some(behind);
+        }
+        Ok(None) => {}
+        Err(error) => {
+            head.upstream_error = format!("{:?}", error);
+        }
     }
 
     Ok(head)
