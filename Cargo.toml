@@ -5,6 +5,7 @@ authors = ["Daniel Parks <oss-git-status-vars@demonhorse.org>"]
 description = "Summarize git repo info into shell variables (for use in a prompt)"
 homepage = "https://github.com/danielparks/git-status-vars"
 repository = "https://github.com/danielparks/git-status-vars"
+documentation = "https://github.com/danielparks/git-status-vars"
 readme = "README.md"
 keywords = ["git", "shell", "prompt", "zsh", "bash"]
 categories = ["development-tools", "command-line-utilities"]
