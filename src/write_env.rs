@@ -18,6 +18,14 @@ pub fn write_key_value(
     write!(out, "{}{}={}\n", prefix, key, shell_quote(value))
 }
 
+pub fn print_key_value(
+    prefix: impl fmt::Display,
+    key: impl fmt::Display,
+    value: impl fmt::Display,
+) {
+    write_key_value(&mut io::stdout(), prefix, key, value).unwrap();
+}
+
 pub trait WriteEnv {
     // Output the reference information with a prefix (e.g. "ref_").
     fn write_env(
@@ -27,7 +35,9 @@ pub trait WriteEnv {
     ) -> io::Result<()>;
 
     // Print the reference information with a prefix (e.g. "ref_") to stdout.
-    fn print_env(&self, prefix: impl fmt::Display) -> io::Result<()> {
-        self.write_env(&mut io::stdout(), prefix)
+    //
+    // Panics if writing to `io::stdout` fails.
+    fn print_env(&self, prefix: impl fmt::Display) {
+        self.write_env(&mut io::stdout(), prefix).unwrap();
     }
 }

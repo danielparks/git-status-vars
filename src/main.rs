@@ -1,7 +1,7 @@
 use clap::Parser;
 use git2::Repository;
 use git2::{ErrorClass, ErrorCode};
-use git_summary::{shell_quote, shell_quote_debug, WriteEnv};
+use git_summary::{print_key_value, WriteEnv};
 use simplelog::{
     ColorChoice, CombinedLogger, Config, ConfigBuilder, LevelFilter,
     TermLogger, TerminalMode,
@@ -41,14 +41,12 @@ fn main() {
     } else if params.repositories.len() == 1 {
         summarize_repository(Repository::open(&params.repositories[0]), "");
     } else {
-        println!("repo_count={}", params.repositories.len());
+        print_key_value("", "repo_count", params.repositories.len());
         for (i, repo_path) in params.repositories.iter().enumerate() {
             println!();
-            println!("repo{}_path={}", i + 1, shell_quote(repo_path.display()));
-            summarize_repository(
-                Repository::open(repo_path),
-                &format!("repo{}_", i + 1),
-            );
+            let prefix = format!("repo{}_", i + 1);
+            print_key_value(&prefix, "path", repo_path.display());
+            summarize_repository(Repository::open(repo_path), &prefix);
         }
     }
 }
@@ -60,15 +58,15 @@ fn summarize_repository(opened: Result<Repository, git2::Error>, prefix: &str) {
             if error.code() == ErrorCode::NotFound
                 && error.class() == ErrorClass::Repository =>
         {
-            println!("{}repo_state=NotFound", &prefix);
+            print_key_value(prefix, "repo_state", "NotFound");
             Ok(())
         }
         Err(error) => Err(error),
     };
 
     if let Err(error) = result {
-        println!("{}repo_state=Error", prefix);
-        println!("{}repo_error={}", prefix, shell_quote_debug(&error));
+        print_key_value(prefix, "repo_state", "Error");
+        print_key_value(prefix, "repo_error", format!("{:?}", &error));
     }
 }
 
@@ -76,23 +74,11 @@ fn summarize_opened_repository(
     repository: Repository,
     prefix: &str,
 ) -> Result<(), git2::Error> {
-    println!(
-        "{}repo_state={}",
-        prefix,
-        shell_quote_debug(&repository.state())
-    );
-    println!(
-        "{}repo_empty={}",
-        prefix,
-        shell_quote(&repository.is_empty()?)
-    );
-    println!("{}repo_bare={}", prefix, shell_quote(&repository.is_bare()));
-    git_summary::head_info(&repository)?
-        .print_env(format!("{}head_", prefix))
-        .unwrap();
-    git_summary::count_changes(&repository)?
-        .print_env(prefix)
-        .unwrap();
+    print_key_value(prefix, "repo_state", format!("{:?}", &repository.state()));
+    print_key_value(prefix, "repo_empty", &repository.is_empty()?);
+    print_key_value(prefix, "repo_bare", &repository.is_bare());
+    git_summary::head_info(&repository)?.print_env(format!("{}head_", prefix));
+    git_summary::count_changes(&repository)?.print_env(prefix);
 
     Ok(())
 }
