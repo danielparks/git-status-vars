@@ -1,5 +1,8 @@
 # Summarize git repo info into shell variables
 
+![docs.rs](https://img.shields.io/docsrs/git-status-vars)
+![Crates.io](https://img.shields.io/crates/v/git-status-vars)
+
 This is designed to replace multiple calls to git with a single use of
 `eval $(git-status-vars)`. It’s especially useful for generating a shell prompt.
 
