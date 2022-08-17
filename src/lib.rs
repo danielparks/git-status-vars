@@ -2,6 +2,10 @@ use git2::ReferenceType;
 use git2::Repository;
 use git2::{Status, StatusOptions, StatusShow};
 use std::fmt;
+use std::io;
+
+mod write_env;
+pub use write_env::*;
 
 #[derive(Debug, Default)]
 pub struct Reference {
@@ -47,25 +51,21 @@ impl Reference {
     pub fn short(&self) -> &str {
         shorten(&self.name).unwrap_or(&self.name)
     }
-
-    // Output the reference information with a prefix (e.g. "ref_").
-    pub fn write_env(
-        &self,
-        f: &mut fmt::Formatter<'_>,
-        prefix: impl fmt::Display,
-    ) -> fmt::Result {
-        write_key_value(f, &prefix, "name", &self.name)?;
-        write_key_value(f, &prefix, "short", &self.short())?;
-        write_key_value(f, &prefix, "kind", &self.kind)?;
-        write_key_value(f, &prefix, "error", &self.error)?;
-
-        Ok(())
-    }
 }
 
-impl fmt::Display for Reference {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.write_env(f, "")
+impl WriteEnv for Reference {
+    // Output the reference information with a prefix (e.g. "ref_").
+    fn write_env(
+        &self,
+        out: &mut dyn io::Write,
+        prefix: impl fmt::Display,
+    ) -> io::Result<()> {
+        write_key_value(out, &prefix, "name", &self.name)?;
+        write_key_value(out, &prefix, "short", &self.short())?;
+        write_key_value(out, &prefix, "kind", &self.kind)?;
+        write_key_value(out, &prefix, "error", &self.error)?;
+
+        Ok(())
     }
 }
 
@@ -75,48 +75,25 @@ pub struct Head {
     pub hash: String,
 }
 
-impl Head {
+impl WriteEnv for Head {
     // Output the head information with a prefix (e.g. "head_").
-    pub fn write_env(
+    fn write_env(
         &self,
-        f: &mut fmt::Formatter<'_>,
+        out: &mut dyn io::Write,
         prefix: impl fmt::Display,
-    ) -> fmt::Result {
-        write_key_value(f, &prefix, "ref_length", self.trail.len() - 1)?;
+    ) -> io::Result<()> {
+        write_key_value(out, &prefix, "ref_length", self.trail.len() - 1)?;
         for (i, reference) in self.trail[1..].iter().enumerate() {
-            reference.write_env(f, format!("{}ref{}_", &prefix, i + 1))?;
+            reference.write_env(out, format!("{}ref{}_", &prefix, i + 1))?;
         }
-        write_key_value(f, &prefix, "hash", &self.hash)?;
+        write_key_value(out, &prefix, "hash", &self.hash)?;
 
         Ok(())
     }
 }
 
-impl fmt::Display for Head {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.write_env(f, "head_")
-    }
-}
-
-pub fn shell_quote(value: impl fmt::Display) -> String {
-    shell_words::quote(&format!("{}", value)).into()
-}
-
-pub fn shell_quote_debug(value: impl fmt::Debug) -> String {
-    shell_words::quote(&format!("{:?}", value)).into()
-}
-
-pub fn write_key_value(
-    f: &mut fmt::Formatter<'_>,
-    prefix: impl fmt::Display,
-    key: impl fmt::Display,
-    value: impl fmt::Display,
-) -> fmt::Result {
-    write!(f, "{}{}={}\n", prefix, key, shell_quote(value))
-}
-
 /// Print information about the HEAD of the repository at path.
-pub fn head_info(repository: &Repository) -> anyhow::Result<Head> {
+pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
     let mut current = "HEAD".to_string();
     let mut head = Head::default();
     loop {
@@ -193,31 +170,25 @@ impl From<[usize; 4]> for ChangeCounters {
     }
 }
 
-impl ChangeCounters {
+impl WriteEnv for ChangeCounters {
     // Output the tree change information with a prefix (e.g. "ref_").
-    pub fn write_env(
+    fn write_env(
         &self,
-        f: &mut fmt::Formatter<'_>,
+        out: &mut dyn io::Write,
         prefix: impl fmt::Display,
-    ) -> fmt::Result {
-        write_key_value(f, &prefix, "untracked_count", &self.untracked)?;
-        write_key_value(f, &prefix, "unstaged_count", &self.unstaged)?;
-        write_key_value(f, &prefix, "staged_count", &self.staged)?;
-        write_key_value(f, &prefix, "conflicted_count", &self.conflicted)?;
+    ) -> io::Result<()> {
+        write_key_value(out, &prefix, "untracked_count", &self.untracked)?;
+        write_key_value(out, &prefix, "unstaged_count", &self.unstaged)?;
+        write_key_value(out, &prefix, "staged_count", &self.staged)?;
+        write_key_value(out, &prefix, "conflicted_count", &self.conflicted)?;
 
         Ok(())
     }
 }
 
-impl fmt::Display for ChangeCounters {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.write_env(f, "")
-    }
-}
-
 pub fn count_changes(
     repository: &Repository,
-) -> anyhow::Result<ChangeCounters> {
+) -> Result<ChangeCounters, git2::Error> {
     if repository.is_bare() {
         // Can't run status on bare repo.
         return Ok(ChangeCounters::default());

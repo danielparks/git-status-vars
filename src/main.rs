@@ -1,12 +1,12 @@
 use clap::Parser;
 use git2::Repository;
-use git_summary::{shell_quote, shell_quote_debug};
+use git2::{ErrorClass, ErrorCode};
+use git_summary::{shell_quote, shell_quote_debug, WriteEnv};
 use simplelog::{
     ColorChoice, CombinedLogger, Config, ConfigBuilder, LevelFilter,
     TermLogger, TerminalMode,
 };
 use std::path::PathBuf;
-use std::process::exit;
 
 #[derive(Debug, clap::Parser)]
 #[clap(version, about)]
@@ -21,13 +21,8 @@ struct Params {
 }
 
 fn main() {
-    if let Err(error) = cli(Params::parse()) {
-        eprintln!("# Error: {:#}", error);
-        exit(1);
-    }
-}
+    let params = Params::parse();
 
-fn cli(params: Params) -> anyhow::Result<()> {
     let filter = match params.verbose {
         3.. => LevelFilter::Trace,
         2 => LevelFilter::Debug,
@@ -42,27 +37,62 @@ fn cli(params: Params) -> anyhow::Result<()> {
     .unwrap();
 
     if params.repositories.is_empty() {
-        summarize_repository(&Repository::open_from_env()?)?;
+        summarize_repository(Repository::open_from_env(), "");
     } else if params.repositories.len() == 1 {
-        summarize_repository(&Repository::open(&params.repositories[0])?)?;
+        summarize_repository(Repository::open(&params.repositories[0]), "");
     } else {
-        let mut blank = "";
-        for repo_path in params.repositories {
-            println!("{}# {}", blank, repo_path.display());
-            blank = "\n";
-            summarize_repository(&Repository::open(repo_path)?)?;
+        println!("repo_count={}", params.repositories.len());
+        for (i, repo_path) in params.repositories.iter().enumerate() {
+            println!();
+            println!("repo{}_path={}", i + 1, shell_quote(repo_path.display()));
+            summarize_repository(
+                Repository::open(repo_path),
+                &format!("repo{}_", i + 1),
+            );
         }
     }
-
-    Ok(())
 }
 
-fn summarize_repository(repository: &Repository) -> anyhow::Result<()> {
-    println!("repo_state={}", shell_quote_debug(&repository.state()));
-    println!("repo_empty={}", shell_quote(&repository.is_empty()?));
-    println!("repo_bare={}", shell_quote(&repository.is_bare()));
-    print!("{}", git_summary::head_info(&repository)?);
-    print!("{}", git_summary::count_changes(&repository)?);
+fn summarize_repository(opened: Result<Repository, git2::Error>, prefix: &str) {
+    let result = match opened {
+        Ok(repository) => summarize_opened_repository(repository, prefix),
+        Err(error)
+            if error.code() == ErrorCode::NotFound
+                && error.class() == ErrorClass::Repository =>
+        {
+            println!("{}repo_state=NotFound", &prefix);
+            Ok(())
+        }
+        Err(error) => Err(error),
+    };
+
+    if let Err(error) = result {
+        println!("{}repo_state=Error", prefix);
+        println!("{}repo_error={}", prefix, shell_quote_debug(&error));
+    }
+}
+
+fn summarize_opened_repository(
+    repository: Repository,
+    prefix: &str,
+) -> Result<(), git2::Error> {
+    println!(
+        "{}repo_state={}",
+        prefix,
+        shell_quote_debug(&repository.state())
+    );
+    println!(
+        "{}repo_empty={}",
+        prefix,
+        shell_quote(&repository.is_empty()?)
+    );
+    println!("{}repo_bare={}", prefix, shell_quote(&repository.is_bare()));
+    git_summary::head_info(&repository)?
+        .print_env(prefix)
+        .unwrap();
+    git_summary::count_changes(&repository)?
+        .print_env(prefix)
+        .unwrap();
 
     Ok(())
 }
