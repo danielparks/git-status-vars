@@ -1,24 +1,60 @@
-# git-summary
+# Summarize information about a git repo into shell variables
 
-Use to generate a prompt.
+This is designed to replace multiple calls to git with a single use of
+`eval $(git-summary)`.
 
-Currently this is targeted at returning the following:
+### Example prompt without `git-summary`
 
 ```sh
-git diff --quiet --ignore-submodules HEAD &>/dev/null
-dirty=$?
+git_prompt () {
+  setopt local_options pipefail
+  local untracked_count fg_color=green
+  untracked_count=$(git ls-files --other --exclude-standard 2>/dev/null | wc -l)
+  if (( $? != 0 )) ; then
+    # No repository
+    return 0
+  fi
 
-untracked_files=$(git ls-files --other --exclude-standard 2>/dev/null | wc -l)
+  local fg_color=green
+  if (( $untracked_count > 0 )) ; then
+    fg_color=red
+  fi
 
-# Try for the branch or tag name, then try for the commit hash
-ref=$(git symbolic-ref HEAD 2>/dev/null) \
-  || ref="$(git show-ref --head --hash --abbrev HEAD | head -n1 2>/dev/null)"
+  # Try for the branch or tag name, then try for the commit hash
+  ref=$(git symbolic-ref --short HEAD 2>/dev/null) \
+    || ref="$(git show-ref --head --hash --abbrev HEAD 2>/dev/null | head -n1)"
+
+  print -Pn "%F{$fg_color}${ref}%f "
+}
 ```
 
-### Example output
+### Example prompt using `git-summary`
+
+```sh
+git_prompt () {
+  eval $(git-summary 2>/dev/null)
+  if [[ $repo_state == "NotFound" ]] ; then
+    return 0
+  fi
+
+  local fg_color=green
+  if (( $untracked_count > 0 )) ; then
+    fg_color=red
+  fi
+
+  local ref=$head_ref1_short
+  if [[ -z $ref ]] ; then
+    ref=${head_hash:0:8}
+  fi
+
+  print -Pn "%F{$fg_color}${ref}%f "
+}
+```
+
+### Typical output
 
 ```
-❯ git-summary
+~/projects/git-summary ❯ git-summary
 repo_state=Clean
 repo_empty=false
 repo_bare=false
@@ -35,6 +71,9 @@ untracked_count=0
 unstaged_count=0
 staged_count=0
 conflicted_count=0
+~/projects/git-summary ❯ cd /
+/ ❯ git-summary
+repo_state=NotFound
 ```
 
 ## License
