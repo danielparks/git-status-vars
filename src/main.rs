@@ -88,7 +88,7 @@ fn summarize_opened_repository(
     );
     println!("{}repo_bare={}", prefix, shell_quote(&repository.is_bare()));
     git_summary::head_info(&repository)?
-        .print_env(prefix)
+        .print_env(format!("{}head_", prefix))
         .unwrap();
     git_summary::count_changes(&repository)?
         .print_env(prefix)
