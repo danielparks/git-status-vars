@@ -7,6 +7,7 @@ use std::io;
 mod shell_writer;
 pub use shell_writer::*;
 
+/// A reference in a git repository.
 #[derive(Debug, Default)]
 pub struct Reference {
     pub name: String,
@@ -66,6 +67,7 @@ impl ShellVars for Reference {
     }
 }
 
+/// The trail of a `HEAD` reference.
 #[derive(Debug, Default)]
 pub struct Head {
     pub trail: Vec<Reference>,
@@ -82,7 +84,7 @@ impl ShellVars for Head {
     }
 }
 
-/// Print information about the HEAD of the repository at path.
+/// Trace the `HEAD` reference for a repository.
 pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
     let mut current = "HEAD".to_string();
     let mut head = Head::default();
@@ -128,6 +130,7 @@ fn display_option(s: Option<impl fmt::Display>) -> String {
     s.map(|s| s.to_string()).unwrap_or_else(|| "".to_string())
 }
 
+/// Track changes in the working tree and index (staged area).
 #[derive(Debug, Default)]
 pub struct ChangeCounters {
     pub untracked: usize,
@@ -157,6 +160,7 @@ impl ShellVars for ChangeCounters {
     }
 }
 
+/// Count changes in the working tree and index (staged area) of a repository.
 pub fn count_changes(
     repository: &Repository,
 ) -> Result<ChangeCounters, git2::Error> {

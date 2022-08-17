@@ -3,6 +3,9 @@ use std::fmt::{self, Debug, Display};
 use std::io;
 use std::rc::Rc;
 
+/// A writer of var=value pairs.
+///
+/// See [`ShellWriter::new()`].
 #[derive(Clone)]
 pub struct ShellWriter<W: io::Write> {
     writer: Rc<RefCell<W>>,
@@ -10,6 +13,19 @@ pub struct ShellWriter<W: io::Write> {
 }
 
 impl<W: io::Write> ShellWriter<W> {
+    /// Create a new `ShellWriter`. The `prefix` will be prepended anytime a
+    /// var is outputted, e.g. `prefixvar=value`.
+    ///
+    /// Generally, you will want to use this like:
+    ///
+    /// ```rust
+    /// use git_summary::ShellWriter;
+    /// ShellWriter::default().group("group").write_var("var", "value");
+    /// // or...
+    /// let mut buffer: Vec<u8> = vec![];
+    /// ShellWriter::new(&mut buffer, "").group("group").write_var("var", "value");
+    /// assert_eq!(buffer, b"group_var=value\n");
+    /// ```
     pub fn new(writer: W, prefix: impl Display) -> Self {
         Self {
             writer: Rc::new(RefCell::new(writer)),
@@ -17,30 +33,49 @@ impl<W: io::Write> ShellWriter<W> {
         }
     }
 
+    /// Write var=value with a value that was already quoted.
     fn write_raw(&self, var: impl Display, raw: impl Display) {
         writeln!(self.writer.borrow_mut(), "{}{}={}", self.prefix, var, raw)
             .unwrap();
     }
 
+    /// Write var=value. `value` will be turned into a string, then quoted for
+    /// safe shell insertion. `var` will be assumed to be a valid name for a
+    /// shell variable.
     pub fn write_var(&self, var: impl Display, value: impl Display) {
         self.write_raw(var, shell_quote(value));
     }
 
+    /// Write var=value. `value` will be formatted into a string using
+    /// [`Debug`], then quoted for safe shell insertion. `var` will be assumed
+    /// to be a valid name for a shell variable.
     pub fn write_var_debug(&self, var: impl Display, value: impl Debug) {
         self.write_raw(var, shell_quote_debug(value));
     }
 
+    /// Write an object with the [`ShellVars`] trait. Mostly used with
+    /// [`Self::group()`] and [`Self::group_n()`].
     pub fn write_vars(&self, vars: &impl ShellVars) {
         vars.write_to_shell(self);
     }
 
-    pub fn group(&self, prefix: impl Display) -> ShellWriter<W> {
+    /// Generate a sub-writer with this group name. Example output:
+    ///
+    /// ```sh
+    /// prefix_group_var=value
+    /// ```
+    pub fn group(&self, group: impl Display) -> ShellWriter<W> {
         ShellWriter {
             writer: self.writer.clone(),
-            prefix: format!("{}{}_", self.prefix, prefix),
+            prefix: format!("{}{}_", self.prefix, group),
         }
     }
 
+    /// Generate a sub-writer with this group name and number. Example output:
+    ///
+    /// ```sh
+    /// prefix_groupN_var=value
+    /// ```
     pub fn group_n(
         &self,
         prefix: impl Display,
@@ -51,6 +86,7 @@ impl<W: io::Write> ShellWriter<W> {
 }
 
 impl Default for ShellWriter<io::Stdout> {
+    /// Create a new `ShellWriter` for [`io::stdout()`] and no prefix.
     fn default() -> Self {
         Self::new(io::stdout(), "")
     }
@@ -68,14 +104,22 @@ where
     }
 }
 
+/// An object that can be written as a group of shell variables.
 pub trait ShellVars {
     fn write_to_shell<W: io::Write>(&self, out: &ShellWriter<W>);
 }
 
+/// Quote a value for safe shell insertion.
+///
+/// ```rust
+/// use git_summary::shell_quote;
+/// assert_eq!(shell_quote("a $b `c`\nd"), "'a $b `c`\nd'");
+/// ```
 pub fn shell_quote(value: impl Display) -> String {
     shell_words::quote(&value.to_string()).into()
 }
 
+/// Format a value with [`Debug`] and quote it for safe shell insertion.
 pub fn shell_quote_debug(value: impl Debug) -> String {
     shell_words::quote(&format!("{:?}", value)).into()
 }
