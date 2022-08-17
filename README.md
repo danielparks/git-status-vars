@@ -119,8 +119,8 @@ I have not tested this on large repositories.
 
 ## Rust Crate
 
-![docs.rs](https://img.shields.io/docsrs/git-status-vars)
-![Crates.io](https://img.shields.io/crates/v/git-status-vars)
+[![docs.rs](https://img.shields.io/docsrs/git-status-vars)][docs.rs]
+[![Crates.io](https://img.shields.io/crates/v/git-status-vars)][crates.io]
 
 I’m not sure how useful it is, but this may be used with other Rust code.
 
@@ -137,3 +137,6 @@ to use either.
 Unless you explicitly state otherwise, any contribution you submit as defined
 in the Apache 2.0 license shall be dual licensed as above, without any
 additional terms or conditions.
+
+[docs.rs]: https://docs.rs/git-status-vars/latest/git_status_vars/
+[crates.io]: https://crates.io/crates/git-status-vars
