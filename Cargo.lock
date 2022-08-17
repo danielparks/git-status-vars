@@ -141,6 +141,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "git-summary"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "git2",
+ "log",
+ "shell-words",
+ "simplelog",
+ "tempfile",
+]
+
+[[package]]
 name = "git2"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -151,19 +164,6 @@ dependencies = [
  "libgit2-sys",
  "log",
  "url",
-]
-
-[[package]]
-name = "git_summary"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "git2",
- "log",
- "shell-words",
- "simplelog",
- "tempfile",
 ]
 
 [[package]]

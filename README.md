@@ -18,7 +18,7 @@ ref=$(git symbolic-ref HEAD 2>/dev/null) \
 ### Example output
 
 ```
-❯ target/release/git_summary
+❯ target/release/git-summary
 repo_state=Clean
 repo_empty=false
 repo_bare=false

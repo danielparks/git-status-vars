@@ -1,10 +1,10 @@
 [package]
-name = "git_summary"
+name = "git-summary"
 version = "0.1.0"
-authors = ["Daniel Parks <oss-git_summary@demonhorse.org>"]
+authors = ["Daniel Parks <oss-git-summary@demonhorse.org>"]
 description = "Summarize information about the current git repo"
-homepage = "https://github.com/danielparks/git_summary"
-repository = "https://github.com/danielparks/git_summary"
+homepage = "https://github.com/danielparks/git-summary"
+repository = "https://github.com/danielparks/git-summary"
 readme = "README.md"
 keywords = []
 categories = [] # https://crates.io/category_slugs
