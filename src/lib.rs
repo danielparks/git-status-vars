@@ -218,6 +218,11 @@ impl fmt::Display for ChangeCounters {
 pub fn count_changes(
     repository: &Repository,
 ) -> anyhow::Result<ChangeCounters> {
+    if repository.is_bare() {
+        // Can't run status on bare repo.
+        return Ok(ChangeCounters::default());
+    }
+
     let mut options = StatusOptions::new();
     // exclude_submodules optional?
     options
