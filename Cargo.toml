@@ -6,8 +6,8 @@ description = "Summarize git repo info into shell variables (for use in a prompt
 homepage = "https://github.com/danielparks/git-status-vars"
 repository = "https://github.com/danielparks/git-status-vars"
 readme = "README.md"
-keywords = []
-categories = [] # https://crates.io/category_slugs
+keywords = ["git", "shell", "prompt", "zsh", "bash"]
+categories = ["development-tools", "command-line-utilities"]
 license = "MIT OR Apache-2.0"
 edition = "2018"
 
