@@ -18,7 +18,7 @@ ref=$(git symbolic-ref HEAD 2>/dev/null) \
 ### Example output
 
 ```
-❯ target/release/git-summary
+❯ git-summary
 repo_state=Clean
 repo_empty=false
 repo_bare=false
@@ -27,7 +27,10 @@ head_ref1_name=refs/heads/main
 head_ref1_short=main
 head_ref1_kind=direct
 head_ref1_error=''
-head_hash=6ea382037453bdbe6f514564c62ccc6d479dd551
+head_hash=b175bd90e970a68bd108cf11d0b75a47c0134d4f
+head_ahead=0
+head_behind=0
+head_upstream_error=''
 untracked_count=0
 unstaged_count=0
 staged_count=0
