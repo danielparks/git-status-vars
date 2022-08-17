@@ -1,3 +1,4 @@
+use git2::Branch;
 use git2::ReferenceType;
 use git2::Repository;
 use git2::{Status, StatusOptions, StatusShow};
@@ -72,6 +73,8 @@ impl ShellVars for Reference {
 pub struct Head {
     pub trail: Vec<Reference>,
     pub hash: String,
+    pub ahead_of_upstream: Option<usize>,
+    pub behind_upstream: Option<usize>,
 }
 
 impl ShellVars for Head {
@@ -81,6 +84,8 @@ impl ShellVars for Head {
             out.group_n("ref", i + 1).write_vars(reference);
         }
         out.write_var("hash", &self.hash);
+        out.write_var("ahead", display_option(self.ahead_of_upstream));
+        out.write_var("behind", display_option(self.behind_upstream));
     }
 }
 
@@ -123,7 +128,31 @@ pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
         };
     }
 
+    if let Ok(Some((ahead, behind))) = get_upstream_difference(&repository) {
+        head.ahead_of_upstream = Some(ahead);
+        head.behind_upstream = Some(behind);
+    }
+
     Ok(head)
+}
+
+/// Get the (ahead, behind) count of HEAD versus its upstream branch.
+pub fn get_upstream_difference(
+    repository: &Repository,
+) -> Result<Option<(usize, usize)>, git2::Error> {
+    let local_ref = repository.head()?.resolve()?;
+    if let Some(local_oid) = local_ref.target() {
+        let upstream_branch = Branch::wrap(local_ref).upstream()?;
+        if let Some(upstream_oid) = upstream_branch.get().target() {
+            repository
+                .graph_ahead_behind(local_oid, upstream_oid)
+                .map(|t| Some(t))
+        } else {
+            Ok(None)
+        }
+    } else {
+        Ok(None)
+    }
 }
 
 fn display_option(s: Option<impl fmt::Display>) -> String {
