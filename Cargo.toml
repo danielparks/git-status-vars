@@ -15,12 +15,9 @@ edition = "2018"
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-anyhow = "1.0.44"
 clap = { version = "3.2.15", features = ["derive"] }
 git2 = { version = "0.15.0", default-features = false }
-log = "0.4.14"
 shell-words = "1.1.0"
-simplelog = "0.10.2"
 
 [dev-dependencies]
 tempfile = "3.3.0"
