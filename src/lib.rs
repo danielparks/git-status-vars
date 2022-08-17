@@ -4,8 +4,8 @@ use git2::{Status, StatusOptions, StatusShow};
 use std::fmt;
 use std::io;
 
-mod write_env;
-pub use write_env::*;
+mod shell_writer;
+pub use shell_writer::*;
 
 #[derive(Debug, Default)]
 pub struct Reference {
@@ -53,19 +53,13 @@ impl Reference {
     }
 }
 
-impl WriteEnv for Reference {
+impl ShellVars for Reference {
     // Output the reference information with a prefix (e.g. "ref_").
-    fn write_env(
-        &self,
-        out: &mut dyn io::Write,
-        prefix: impl fmt::Display,
-    ) -> io::Result<()> {
-        write_key_value(out, &prefix, "name", &self.name)?;
-        write_key_value(out, &prefix, "short", &self.short())?;
-        write_key_value(out, &prefix, "kind", &self.kind)?;
-        write_key_value(out, &prefix, "error", &self.error)?;
-
-        Ok(())
+    fn write_to_shell<W: io::Write>(&self, out: &ShellWriter<W>) {
+        out.write_var("name", &self.name);
+        out.write_var("short", &self.short());
+        out.write_var("kind", &self.kind);
+        out.write_var("error", &self.error);
     }
 }
 
@@ -75,20 +69,13 @@ pub struct Head {
     pub hash: String,
 }
 
-impl WriteEnv for Head {
-    // Output the head information with a prefix (e.g. "head_").
-    fn write_env(
-        &self,
-        out: &mut dyn io::Write,
-        prefix: impl fmt::Display,
-    ) -> io::Result<()> {
-        write_key_value(out, &prefix, "ref_length", self.trail.len() - 1)?;
+impl ShellVars for Head {
+    fn write_to_shell<W: io::Write>(&self, out: &ShellWriter<W>) {
+        out.write_var("ref_length", self.trail.len() - 1);
         for (i, reference) in self.trail[1..].iter().enumerate() {
-            reference.write_env(out, format!("{}ref{}_", &prefix, i + 1))?;
+            out.group_n("ref", i + 1).write_vars(reference);
         }
-        write_key_value(out, &prefix, "hash", &self.hash)?;
-
-        Ok(())
+        out.write_var("hash", &self.hash);
     }
 }
 
@@ -170,19 +157,13 @@ impl From<[usize; 4]> for ChangeCounters {
     }
 }
 
-impl WriteEnv for ChangeCounters {
-    // Output the tree change information with a prefix (e.g. "ref_").
-    fn write_env(
-        &self,
-        out: &mut dyn io::Write,
-        prefix: impl fmt::Display,
-    ) -> io::Result<()> {
-        write_key_value(out, &prefix, "untracked_count", &self.untracked)?;
-        write_key_value(out, &prefix, "unstaged_count", &self.unstaged)?;
-        write_key_value(out, &prefix, "staged_count", &self.staged)?;
-        write_key_value(out, &prefix, "conflicted_count", &self.conflicted)?;
-
-        Ok(())
+impl ShellVars for ChangeCounters {
+    // Output the tree change information with a prefix (e.g. "tree_").
+    fn write_to_shell<W: io::Write>(&self, out: &ShellWriter<W>) {
+        out.write_var("untracked_count", &self.untracked);
+        out.write_var("unstaged_count", &self.unstaged);
+        out.write_var("staged_count", &self.staged);
+        out.write_var("conflicted_count", &self.conflicted);
     }
 }
 

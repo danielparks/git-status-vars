@@ -1,7 +1,7 @@
 use clap::Parser;
 use git2::Repository;
 use git2::{ErrorClass, ErrorCode};
-use git_summary::{print_key_value, WriteEnv};
+use git_summary::ShellWriter;
 use simplelog::{
     ColorChoice, CombinedLogger, Config, ConfigBuilder, LevelFilter,
     TermLogger, TerminalMode,
@@ -36,49 +36,55 @@ fn main() {
     ])
     .unwrap();
 
+    let out = ShellWriter::default();
+
     if params.repositories.is_empty() {
-        summarize_repository(Repository::open_from_env(), "");
+        summarize_repository(&out, Repository::open_from_env());
     } else if params.repositories.len() == 1 {
-        summarize_repository(Repository::open(&params.repositories[0]), "");
+        summarize_repository(&out, Repository::open(&params.repositories[0]));
     } else {
-        print_key_value("", "repo_count", params.repositories.len());
+        out.write_var("repo_count", params.repositories.len());
         for (i, repo_path) in params.repositories.iter().enumerate() {
             println!();
-            let prefix = format!("repo{}_", i + 1);
-            print_key_value(&prefix, "path", repo_path.display());
-            summarize_repository(Repository::open(repo_path), &prefix);
+            let repo_out = &out.group_n("repo", i + 1);
+            repo_out.write_var("path", repo_path.display());
+            summarize_repository(repo_out, Repository::open(repo_path));
         }
     }
 }
 
-fn summarize_repository(opened: Result<Repository, git2::Error>, prefix: &str) {
+fn summarize_repository<W: std::io::Write>(
+    out: &ShellWriter<W>,
+    opened: Result<Repository, git2::Error>,
+) {
     let result = match opened {
-        Ok(repository) => summarize_opened_repository(repository, prefix),
+        Ok(repository) => summarize_opened_repository(out, repository),
         Err(error)
             if error.code() == ErrorCode::NotFound
                 && error.class() == ErrorClass::Repository =>
         {
-            print_key_value(prefix, "repo_state", "NotFound");
+            out.write_var("repo_state", "NotFound");
             Ok(())
         }
         Err(error) => Err(error),
     };
 
     if let Err(error) = result {
-        print_key_value(prefix, "repo_state", "Error");
-        print_key_value(prefix, "repo_error", format!("{:?}", &error));
+        out.write_var("repo_state", "Error");
+        out.write_var_debug("repo_error", &error);
     }
 }
 
-fn summarize_opened_repository(
+fn summarize_opened_repository<W: std::io::Write>(
+    out: &ShellWriter<W>,
     repository: Repository,
-    prefix: &str,
 ) -> Result<(), git2::Error> {
-    print_key_value(prefix, "repo_state", format!("{:?}", &repository.state()));
-    print_key_value(prefix, "repo_empty", &repository.is_empty()?);
-    print_key_value(prefix, "repo_bare", &repository.is_bare());
-    git_summary::head_info(&repository)?.print_env(format!("{}head_", prefix));
-    git_summary::count_changes(&repository)?.print_env(prefix);
+    out.write_var_debug("repo_state", &repository.state());
+    out.write_var("repo_empty", &repository.is_empty()?);
+    out.write_var("repo_bare", &repository.is_bare());
+    out.group("head")
+        .write_vars(&git_summary::head_info(&repository)?);
+    out.write_vars(&git_summary::count_changes(&repository)?);
 
     Ok(())
 }
