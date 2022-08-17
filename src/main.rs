@@ -1,7 +1,7 @@
 use clap::Parser;
 use git2::Repository;
 use git2::{ErrorClass, ErrorCode};
-use git_summary::ShellWriter;
+use git_status_vars::ShellWriter;
 use std::path::PathBuf;
 
 #[derive(Debug, clap::Parser)]
@@ -61,8 +61,8 @@ fn summarize_opened_repository<W: std::io::Write>(
     out.write_var("repo_empty", &repository.is_empty()?);
     out.write_var("repo_bare", &repository.is_bare());
     out.group("head")
-        .write_vars(&git_summary::head_info(&repository)?);
-    out.write_vars(&git_summary::count_changes(&repository)?);
+        .write_vars(&git_status_vars::head_info(&repository)?);
+    out.write_vars(&git_status_vars::count_changes(&repository)?);
 
     Ok(())
 }

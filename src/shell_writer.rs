@@ -19,7 +19,7 @@ impl<W: io::Write> ShellWriter<W> {
     /// Generally, you will want to use this like:
     ///
     /// ```rust
-    /// use git_summary::ShellWriter;
+    /// use git_status_vars::ShellWriter;
     /// ShellWriter::default().group("group").write_var("var", "value");
     /// // or...
     /// let mut buffer: Vec<u8> = vec![];
@@ -112,7 +112,7 @@ pub trait ShellVars {
 /// Quote a value for safe shell insertion.
 ///
 /// ```rust
-/// use git_summary::shell_quote;
+/// use git_status_vars::shell_quote;
 /// assert_eq!(shell_quote("a $b `c`\nd"), "'a $b `c`\nd'");
 /// ```
 pub fn shell_quote(value: impl Display) -> String {

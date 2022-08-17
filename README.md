@@ -1,17 +1,18 @@
 # Summarize git repo info into shell variables
 
 This is designed to replace multiple calls to git with a single use of
-`eval $(git-summary)`. It’s especially useful when generating a shell prompt.
+`eval $(git-status-vars)`. It’s especially useful for generating a shell prompt.
 
-It is generally faster, though `git` is fast enough that the difference will not
-usually be perceptible. On my laptop `git-summary` typically runs in around 8 ms
-whereas the fallback code involving multiple calls to `git` takes around 25 ms.
+It is generally faster than multiple calls to `git`, though `git` is fast enough
+that the difference will not usually be perceptible. On my laptop
+`git-status-vars` typically runs in around 8 ms whereas the fallback code
+involving multiple calls to `git` takes around 25 ms.
 
 This is intended to be generally usable in any theme that wants to report git
 information in any shell with `sh`-like strings. I use it in my [personal ZSH
-theme](https://github.com/danielparks/danielparks-zsh-theme/tree/git-summary).
+theme](https://github.com/danielparks/danielparks-zsh-theme).
 
-### Example prompt without `git-summary`
+### Example prompt without `git-status-vars`
 
 ```sh
 git_prompt () {
@@ -36,11 +37,11 @@ git_prompt () {
 }
 ```
 
-### Example prompt with `git-summary`
+### Example prompt with `git-status-vars`
 
 ```sh
 git_prompt () {
-  eval $(git-summary 2>/dev/null)
+  eval $(git-status-vars 2>/dev/null)
   if [[ $repo_state == "NotFound" ]] ; then
     return 0
   fi
@@ -62,7 +63,7 @@ git_prompt () {
 ### Typical output
 
 ```
-~/projects/git-summary ❯ git-summary
+~/projects/git-status-vars ❯ git-status-vars
 repo_state=Clean
 repo_empty=false
 repo_bare=false
@@ -79,8 +80,8 @@ untracked_count=0
 unstaged_count=0
 staged_count=0
 conflicted_count=0
-~/projects/git-summary ❯ cd /
-/ ❯ git-summary
+~/projects/git-status-vars ❯ cd /
+/ ❯ git-status-vars
 repo_state=NotFound
 ```
 
