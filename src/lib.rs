@@ -130,7 +130,7 @@ pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
         };
     }
 
-    match get_upstream_difference(&repository) {
+    match get_upstream_difference(repository) {
         Ok(Some((ahead, behind))) => {
             head.ahead_of_upstream = Some(ahead);
             head.behind_upstream = Some(behind);
@@ -154,7 +154,7 @@ pub fn get_upstream_difference(
         if let Some(upstream_oid) = upstream_branch.get().target() {
             repository
                 .graph_ahead_behind(local_oid, upstream_oid)
-                .map(|t| Some(t))
+                .map(Some)
         } else {
             Ok(None)
         }
