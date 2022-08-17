@@ -1,7 +1,15 @@
-# Summarize information about a git repo into shell variables
+# Summarize git repo info into shell variables
 
 This is designed to replace multiple calls to git with a single use of
-`eval $(git-summary)`.
+`eval $(git-summary)`. It’s especially useful when generating a shell prompt.
+
+It is generally faster, though `git` is fast enough that the difference will not
+usually be perceptible. On my laptop `git-summary` typically runs in around 8 ms
+whereas the fallback code involving multiple calls to `git` takes around 25 ms.
+
+This is intended to be generally usable in any theme that wants to report git
+information in any shell with `sh`-like strings. I use it in my [personal ZSH
+theme](https://github.com/danielparks/danielparks-zsh-theme/tree/git-summary).
 
 ### Example prompt without `git-summary`
 
@@ -28,7 +36,7 @@ git_prompt () {
 }
 ```
 
-### Example prompt using `git-summary`
+### Example prompt with `git-summary`
 
 ```sh
 git_prompt () {

@@ -2,7 +2,7 @@
 name = "git-summary"
 version = "0.1.0"
 authors = ["Daniel Parks <oss-git-summary@demonhorse.org>"]
-description = "Summarize information about a git repo into shell variables"
+description = "Summarize git repo info into shell variables (for use in a prompt)"
 homepage = "https://github.com/danielparks/git-summary"
 repository = "https://github.com/danielparks/git-summary"
 readme = "README.md"
