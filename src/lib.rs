@@ -124,11 +124,8 @@ pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
     Ok(head)
 }
 
-fn display_option<S>(s: Option<S>) -> String
-where
-    S: fmt::Display,
-{
-    s.map(|s| s.to_string()).unwrap_or("".to_string())
+fn display_option(s: Option<impl fmt::Display>) -> String {
+    s.map(|s| s.to_string()).unwrap_or_else(|| "".to_string())
 }
 
 #[derive(Debug, Default)]

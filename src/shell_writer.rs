@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::fmt;
+use std::fmt::{self, Debug, Display};
 use std::io;
 use std::rc::Rc;
 
@@ -10,44 +10,31 @@ pub struct ShellWriter<W: io::Write> {
 }
 
 impl<W: io::Write> ShellWriter<W> {
-    pub fn new(writer: W, prefix: impl fmt::Display) -> Self {
+    pub fn new(writer: W, prefix: impl Display) -> Self {
         Self {
             writer: Rc::new(RefCell::new(writer)),
             prefix: prefix.to_string(),
         }
     }
 
-    pub fn write_var(&self, var: impl fmt::Display, value: impl fmt::Display) {
-        write!(
-            self.writer.borrow_mut(),
-            "{}{}={}\n",
-            self.prefix,
-            var,
-            shell_quote(value)
-        )
-        .unwrap();
+    fn write_raw(&self, var: impl Display, raw: impl Display) {
+        writeln!(self.writer.borrow_mut(), "{}{}={}", self.prefix, var, raw)
+            .unwrap();
     }
 
-    pub fn write_var_debug(
-        &self,
-        var: impl fmt::Display,
-        value: impl fmt::Debug,
-    ) {
-        write!(
-            self.writer.borrow_mut(),
-            "{}{}={}\n",
-            self.prefix,
-            var,
-            shell_quote_debug(value)
-        )
-        .unwrap();
+    pub fn write_var(&self, var: impl Display, value: impl Display) {
+        self.write_raw(var, shell_quote(value));
+    }
+
+    pub fn write_var_debug(&self, var: impl Display, value: impl Debug) {
+        self.write_raw(var, shell_quote_debug(value));
     }
 
     pub fn write_vars(&self, vars: &impl ShellVars) {
         vars.write_to_shell(self);
     }
 
-    pub fn group(&self, prefix: impl fmt::Display) -> ShellWriter<W> {
+    pub fn group(&self, prefix: impl Display) -> ShellWriter<W> {
         ShellWriter {
             writer: self.writer.clone(),
             prefix: format!("{}{}_", self.prefix, prefix),
@@ -56,8 +43,8 @@ impl<W: io::Write> ShellWriter<W> {
 
     pub fn group_n(
         &self,
-        prefix: impl fmt::Display,
-        n: impl fmt::Display,
+        prefix: impl Display,
+        n: impl Display,
     ) -> ShellWriter<W> {
         self.group(format!("{}{}", prefix, n))
     }
@@ -69,9 +56,9 @@ impl Default for ShellWriter<io::Stdout> {
     }
 }
 
-impl<W: io::Write> fmt::Debug for ShellWriter<W>
+impl<W: io::Write> Debug for ShellWriter<W>
 where
-    W: fmt::Debug,
+    W: Debug,
 {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt.debug_struct("ShellWriter")
@@ -85,10 +72,10 @@ pub trait ShellVars {
     fn write_to_shell<W: io::Write>(&self, out: &ShellWriter<W>);
 }
 
-pub fn shell_quote(value: impl fmt::Display) -> String {
+pub fn shell_quote(value: impl Display) -> String {
     shell_words::quote(&value.to_string()).into()
 }
 
-pub fn shell_quote_debug(value: impl fmt::Debug) -> String {
+pub fn shell_quote_debug(value: impl Debug) -> String {
     shell_words::quote(&format!("{:?}", value)).into()
 }
