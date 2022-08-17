@@ -49,7 +49,10 @@ impl Reference {
     }
 
     pub fn short(&self) -> &str {
-        shorten(&self.name).unwrap_or(&self.name)
+        self.name
+            .strip_prefix("refs/heads/")
+            .or_else(|| self.name.strip_prefix("refs/tags/"))
+            .unwrap_or(&self.name)
     }
 }
 
@@ -119,16 +122,6 @@ pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
     }
 
     Ok(head)
-}
-
-// Shorten a reference if possible.
-//
-// Does not normalize the reference first. Requires UTF-8. Does not check for
-// conflicts (e.g. if there are branches or tags with the same name).
-pub fn shorten(full_name: &str) -> Option<&str> {
-    full_name
-        .strip_prefix("refs/heads/")
-        .or_else(|| full_name.strip_prefix("refs/tags/"))
 }
 
 fn display_option<S>(s: Option<S>) -> String
