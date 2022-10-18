@@ -8,7 +8,6 @@ use std::path::PathBuf;
 #[clap(version, about)]
 struct Params {
     /// The repositories to summarize
-    #[clap(parse(from_os_str))]
     repositories: Vec<PathBuf>,
 }
 
