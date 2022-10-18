@@ -16,6 +16,6 @@ edition = "2018"
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-clap = { version = "3.2.15", features = ["derive"] }
+clap = { version = "4.0.16", features = ["derive"] }
 git2 = { version = "0.15.0", default-features = false }
 shell-words = "1.1.0"
