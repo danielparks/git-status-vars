@@ -1,6 +1,6 @@
 [package]
 name = "git-status-vars"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Daniel Parks <oss-git-status-vars@demonhorse.org>"]
 description = "Summarize git repo info into shell variables (for use in a prompt)"
 homepage = "https://github.com/danielparks/git-status-vars"
