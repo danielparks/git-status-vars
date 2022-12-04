@@ -56,9 +56,9 @@ fn summarize_opened_repository<W: std::io::Write>(
     out: &ShellWriter<W>,
     repository: Repository,
 ) -> Result<(), git2::Error> {
-    out.write_var_debug("repo_state", &repository.state());
-    out.write_var("repo_empty", &repository.is_empty()?);
-    out.write_var("repo_bare", &repository.is_bare());
+    out.write_var_debug("repo_state", repository.state());
+    out.write_var("repo_empty", repository.is_empty()?);
+    out.write_var("repo_bare", repository.is_bare());
     out.group("head")
         .write_vars(&git_status_vars::head_info(&repository)?);
     out.write_vars(&git_status_vars::count_changes(&repository)?);

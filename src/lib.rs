@@ -62,7 +62,7 @@ impl ShellVars for Reference {
     // Output the reference information with a prefix (e.g. "ref_").
     fn write_to_shell<W: io::Write>(&self, out: &ShellWriter<W>) {
         out.write_var("name", &self.name);
-        out.write_var("short", &self.short());
+        out.write_var("short", self.short());
         out.write_var("kind", &self.kind);
         out.write_var("error", &self.error);
     }
@@ -190,10 +190,10 @@ impl From<[usize; 4]> for ChangeCounters {
 impl ShellVars for ChangeCounters {
     // Output the tree change information with a prefix (e.g. "tree_").
     fn write_to_shell<W: io::Write>(&self, out: &ShellWriter<W>) {
-        out.write_var("untracked_count", &self.untracked);
-        out.write_var("unstaged_count", &self.unstaged);
-        out.write_var("staged_count", &self.staged);
-        out.write_var("conflicted_count", &self.conflicted);
+        out.write_var("untracked_count", self.untracked);
+        out.write_var("unstaged_count", self.unstaged);
+        out.write_var("staged_count", self.staged);
+        out.write_var("conflicted_count", self.conflicted);
     }
 }
 
