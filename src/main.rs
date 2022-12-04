@@ -9,11 +9,17 @@ use std::path::PathBuf;
 struct Params {
     /// The repositories to summarize
     repositories: Vec<PathBuf>,
+
+    /// Prefix for each shell var line (e.g. 'local ')
+    #[clap(long, short = 'p')]
+    prefix: Option<String>,
 }
 
 fn main() {
     let params = Params::parse();
-    let out = ShellWriter::default();
+    let out = ShellWriter::with_prefix(
+        params.prefix.unwrap_or_else(|| String::from("")),
+    );
 
     if params.repositories.is_empty() {
         summarize_repository(&out, Repository::open_from_env());
