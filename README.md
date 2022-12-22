@@ -88,6 +88,7 @@ git_prompt () {
 ```
 ~/projects/git-status-vars ❯ git-status-vars
 repo_state=Clean
+repo_workdir=/Users/daniel/projects/git-status-vars/
 repo_empty=false
 repo_bare=false
 head_ref_length=1
@@ -95,7 +96,7 @@ head_ref1_name=refs/heads/main
 head_ref1_short=main
 head_ref1_kind=direct
 head_ref1_error=''
-head_hash=b175bd90e970a68bd108cf11d0b75a47c0134d4f
+head_hash=2df6b768e60fbf899d8c8dc4a20385f30ee5da24
 head_ahead=0
 head_behind=0
 head_upstream_error=''
