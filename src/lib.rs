@@ -1,6 +1,7 @@
 use git2::Branch;
 use git2::ReferenceType;
 use git2::Repository;
+use git2::{ErrorClass, ErrorCode};
 use git2::{Status, StatusOptions, StatusShow};
 use std::fmt;
 use std::io;
@@ -89,6 +90,66 @@ impl ShellVars for Head {
         out.write_var("behind", display_option(self.behind_upstream));
         out.write_var("upstream_error", &self.upstream_error);
     }
+}
+
+/// Summarize information about a repository.
+///
+/// This takes the `Result` from one of the `Repository::open()` functions.
+///
+/// ### Example
+///
+/// ```no_run
+/// use git_status_vars::{summarize_repository, ShellWriter};
+/// use git2::Repository;
+///
+/// summarize_repository(&ShellWriter::default(), Repository::open_from_env());
+/// ```
+pub fn summarize_repository<W: std::io::Write>(
+    out: &ShellWriter<W>,
+    opened: Result<Repository, git2::Error>,
+) {
+    let result = match opened {
+        Ok(repository) => summarize_opened_repository(out, repository),
+        Err(error)
+            if error.code() == ErrorCode::NotFound
+                && error.class() == ErrorClass::Repository =>
+        {
+            out.write_var("repo_state", "NotFound");
+            Ok(())
+        }
+        Err(error) => Err(error),
+    };
+
+    if let Err(error) = result {
+        out.write_var("repo_state", "Error");
+        out.write_var_debug("repo_error", error);
+    }
+}
+
+/// Summarize information about a successfully opened repository.
+///
+/// ### Example
+///
+/// ```no_run
+/// use git_status_vars::{summarize_opened_repository, ShellWriter};
+/// use git2::Repository;
+///
+/// summarize_opened_repository(
+///     &ShellWriter::default(),
+///     Repository::open_from_env().unwrap(),
+/// ).unwrap();
+/// ```
+pub fn summarize_opened_repository<W: std::io::Write>(
+    out: &ShellWriter<W>,
+    repository: Repository,
+) -> Result<(), git2::Error> {
+    out.write_var_debug("repo_state", repository.state());
+    out.write_var("repo_empty", repository.is_empty()?);
+    out.write_var("repo_bare", repository.is_bare());
+    out.group("head").write_vars(&head_info(&repository)?);
+    out.write_vars(&count_changes(&repository)?);
+
+    Ok(())
 }
 
 /// Trace the `HEAD` reference for a repository.
