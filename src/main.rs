@@ -54,7 +54,7 @@ fn summarize_repository<W: std::io::Write>(
 
     if let Err(error) = result {
         out.write_var("repo_state", "Error");
-        out.write_var_debug("repo_error", &error);
+        out.write_var_debug("repo_error", error);
     }
 }
 
