@@ -10,10 +10,7 @@ readme = "README.md"
 keywords = ["git", "shell", "prompt", "zsh", "bash"]
 categories = ["development-tools", "command-line-utilities"]
 license = "MIT OR Apache-2.0"
-edition = "2018"
-
-[badges]
-maintenance = { status = "actively-developed" }
+edition = "2021"
 
 [dependencies]
 clap = { version = "4.0.16", features = ["derive"] }

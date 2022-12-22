@@ -116,7 +116,7 @@ pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
                 }
                 None => {
                     head.trail.push(Reference::new(
-                        &display_option(reference.name()),
+                        display_option(reference.name()),
                         "unknown",
                     ));
                     break;
