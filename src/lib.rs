@@ -1,3 +1,10 @@
+//! This is primarily a command line utility. The documentation for the command
+//! line interface is in [README.md][].
+//!
+//! The primary entrance to this code is [`summarize_repository()`]. It opens a
+//! [`Repository`], then calls [`summarize_opened_repository()`] on it.
+//!
+//! [README.md]: https://github.com/danielparks/git-status-vars/blob/main/README.md
 use git2::Branch;
 use git2::ReferenceType;
 use git2::Repository;

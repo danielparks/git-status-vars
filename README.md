@@ -1,6 +1,6 @@
 # Summarize git repo info into shell variables
 
-This is designed to replace multiple calls to git with a single use of
+This is designed to replace multiple calls to `git` with a single use of
 `eval $(git-status-vars)`. It’s especially useful for generating a shell prompt.
 
 This is intended to be generally usable in any theme that wants to report git
@@ -23,16 +23,16 @@ fi
 ```
 
 This outputs a bunch of `sh` compatible environment variables about the current
-repository. The repository can be found a number of ways:
+repository. The repository is found by looking at each of the following in order
+and taking the first that matches:
 
-  1. A repository directory, or a subdirectory of a repository, may be passed on
-     the command line. (This means passing `.` will always skip `$GIT_DIR`.)
+  1. Command line parameter. A repository directory, or a subdirectory of a
+     repository, may be passed on the command line.
   2. The `$GIT_DIR` environment variable, just like `git`.
-  3. It will look for a `.git` directory in the working directory or one of its
-     parents.
+  3. A `.git` directory in the working directory or one of its parents.
 
-It will always output `repo_state=`, but all other variables may be left out. In
-particular, if it can’t find a repository, it will output only
+`git-status-vars` will always output `repo_state=`, but all other variables may
+be left out. In particular, if it can’t find a repository, it will output only
 `repo_state=NotFound`.
 
 ### Example prompt function with `git-status-vars`
@@ -111,8 +111,8 @@ repo_state=NotFound
 
 ## Performance
 
-It is generally faster than multiple calls to `git`, though `git` is fast enough
-that the difference will not usually be perceptible. On my laptop
+`git-status-vars` is generally faster than multiple calls to `git`, though `git`
+is fast enough that the difference will not usually be perceptible. On my laptop
 `git-status-vars` typically runs in around 8 ms whereas the fallback code
 involving multiple calls to `git` takes around 25 ms.
 
@@ -123,7 +123,16 @@ I have not tested this on large repositories.
 [![docs.rs](https://img.shields.io/docsrs/git-status-vars)][docs.rs]
 [![Crates.io](https://img.shields.io/crates/v/git-status-vars)][crates.io]
 
-I’m not sure how useful it is, but this may be used with other Rust code.
+I’m not sure how useful it is, but this may be used from other Rust code.
+
+## Change Log
+
+Notable changes are tracked in [CHANGELOG.md](CHANGELOG.md). It is kept updated
+with code changes, then a new “Release” header is added when a release is cut.
+The changes from the release are added to the git tag and to the [release
+description][] on GitHub.
+
+[release description]: https://github.com/danielparks/git-status-vars/releases
 
 ## License
 
