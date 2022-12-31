@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 0.2.2 (2022-12-31)
+
+### Changes
+
+* Bump version to test release workflow.
+
 ## Release 0.2.1 (2022-12-31)
 
 ### Changes
