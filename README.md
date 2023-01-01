@@ -13,19 +13,17 @@ You can download binaries from the [GitHub releases page][releases]. Just
 extract them and copy the file inside into your `$PATH`, e.g. `/usr/local/bin`.
 The most common ones are:
 
-  * [Linux on x86-64](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-x86_64-unknown-linux-gnu.tar.gz)
-  * [Linux on ARM](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-aarch64-unknown-linux-musl.tar.gz)
-  * [macOS on Intel](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-x86_64-apple-darwin.tar.gz)
-  * [macOS on Apple silicon](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-aarch64-apple-darwin.tar.gz)
+  * Linux: [x86-64](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-x86_64-unknown-linux-gnu.tar.gz),
+    [ARM](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-aarch64-unknown-linux-musl.tar.gz)
+  * macOS: [Intel](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-x86_64-apple-darwin.tar.gz),
+    [Apple silicon](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-aarch64-apple-darwin.tar.gz)
   * [Windows on x86-64](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-x86_64-pc-windows-msvc.zip)
 
-If you have `cargo`, you can use `cargo install`:
+If you have `cargo`, you can just do `cargo install git-status-vars` to install
+from source, or if you’ve installed [`cargo binstall`][binstall] you can use
+that (`cargo binstall git-status-vars`).
 
-```sh
-cargo install git-status-vars
-```
-
-[`cargo binstall`][binstall] also works.
+[![Release status](https://github.com/danielparks/git-status-vars/actions/workflows/release.yaml/badge.svg)](https://github.com/danielparks/git-status-vars/actions/workflows/release.yaml)
 
 ## Usage
 
