@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## main branch
+
+* Add download links to README.md.
+
 ## Release 0.2.2 (2022-12-31)
 
 ### Changes

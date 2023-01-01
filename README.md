@@ -9,9 +9,23 @@ theme](https://github.com/danielparks/danielparks-zsh-theme).
 
 ## Installation
 
+You can download binaries from the [GitHub releases page][releases]. Just
+extract them and copy the file inside into your `$PATH`, e.g. `/usr/local/bin`.
+The most common ones are:
+
+  * [Linux on x86-64](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-x86_64-unknown-linux-gnu.tar.gz)
+  * [Linux on ARM](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-aarch64-unknown-linux-musl.tar.gz)
+  * [macOS on Intel](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-x86_64-apple-darwin.tar.gz)
+  * [macOS on Apple silicon](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-aarch64-apple-darwin.tar.gz)
+  * [Windows on x86-64](https://github.com/danielparks/git-status-vars/releases/latest/download/git-status-vars-x86_64-pc-windows-msvc.zip)
+
+If you have `cargo`, you can use `cargo install`:
+
 ```sh
 cargo install git-status-vars
 ```
+
+[`cargo binstall`][binstall] also works.
 
 ## Usage
 
@@ -130,9 +144,7 @@ I’m not sure how useful it is, but this may be used from other Rust code.
 Notable changes are tracked in [CHANGELOG.md](CHANGELOG.md). It is kept updated
 with code changes, then a new “Release” header is added when a release is cut.
 The changes from the release are added to the git tag and to the [release
-description][] on GitHub.
-
-[release description]: https://github.com/danielparks/git-status-vars/releases
+description][releases] on GitHub.
 
 ## License
 
@@ -148,5 +160,7 @@ Unless you explicitly state otherwise, any contribution you submit as defined
 in the Apache 2.0 license shall be dual licensed as above, without any
 additional terms or conditions.
 
-[docs.rs]: https://docs.rs/git-status-vars/latest/git_status_vars/
+[binstall]: https://github.com/cargo-bins/cargo-binstall
 [crates.io]: https://crates.io/crates/git-status-vars
+[docs.rs]: https://docs.rs/git-status-vars/latest/git_status_vars/
+[releases]: https://github.com/danielparks/git-status-vars/releases
