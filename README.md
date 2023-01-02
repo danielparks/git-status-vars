@@ -137,26 +137,10 @@ I have not tested this on large repositories.
 
 I’m not sure how useful it is, but this may be used from other Rust code.
 
-## Change Log
+## Development and contributions
 
-Notable changes are tracked in [CHANGELOG.md](CHANGELOG.md). It is kept updated
-with code changes, then a new “Release” header is added when a release is cut.
-The changes from the release are added to the git tag and to the [release
-description][releases] on GitHub.
-
-## License
-
-This project dual-licensed under the Apache 2 and MIT licenses. You may choose
-to use either.
-
- * [Apache License, Version 2.0](LICENSE-APACHE)
- * [MIT license](LICENSE-MIT)
-
-### Contributions
-
-Unless you explicitly state otherwise, any contribution you submit as defined
-in the Apache 2.0 license shall be dual licensed as above, without any
-additional terms or conditions.
+See [DEVELOPMENT.md](DEVELOPMENT.md) for notes on contributing to this repo,
+the license, how changes are tracked, and how releases are made.
 
 [binstall]: https://github.com/cargo-bins/cargo-binstall
 [crates.io]: https://crates.io/crates/git-status-vars
