@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## main branch
+
 ## Release 0.2.4 (2023-01-21)
 
 ### Security fixes
