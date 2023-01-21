@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## main branch
+## Release 0.2.4 (2023-01-21)
+
+### Security fixes
+
+* Upgrade [git2] dependency to 0.16.1 to fix a [security vulnerability in its
+  handling of SSH keys][GHSA-m4ch-rfv5-x5g3]. This was unlikely to affect
+  git-status-vars since it doesn’t fetch data from, or otherwise interact with,
+  remote repositories.
+
+[git2]: https://crates.io/crates/git2
+[GHSA-m4ch-rfv5-x5g3]: https://github.com/rust-lang/git2-rs/security/advisories/GHSA-m4ch-rfv5-x5g3
 
 ## Release 0.2.3 (2022-12-31)
 
