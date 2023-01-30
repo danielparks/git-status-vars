@@ -81,7 +81,7 @@ impl<W: io::Write> ShellWriter<W> {
         prefix: impl Display,
         n: impl Display,
     ) -> ShellWriter<W> {
-        self.group(format!("{}{}", prefix, n))
+        self.group(format!("{prefix}{n}"))
     }
 }
 
@@ -128,5 +128,5 @@ pub fn shell_quote(value: impl Display) -> String {
 
 /// Format a value with [`Debug`] and quote it for safe shell insertion.
 pub fn shell_quote_debug(value: impl Debug) -> String {
-    shell_words::quote(&format!("{:?}", value)).into()
+    shell_words::quote(&format!("{value:?}")).into()
 }

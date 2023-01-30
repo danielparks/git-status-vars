@@ -181,7 +181,7 @@ fn commit_delete(root: PathBuf) {
 
     helpers::git_init(&root, "repo");
     helpers::make_commit(&root, "repo", 1);
-    fs::remove_file(&root.join("repo").join("a")).unwrap();
+    fs::remove_file(root.join("repo").join("a")).unwrap();
 
     helpers::assert_git_status_vars(
         &root,
