@@ -46,7 +46,7 @@ impl Reference {
         Reference {
             name: name.as_ref().to_string(),
             kind: kind.as_ref().to_string(),
-            error: format!("{:?}", error),
+            error: format!("{error:?}"),
         }
     }
 
@@ -209,7 +209,7 @@ pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
         }
         Ok(None) => {}
         Err(error) => {
-            head.upstream_error = format!("{:?}", error);
+            head.upstream_error = format!("{error:?}");
         }
     }
 

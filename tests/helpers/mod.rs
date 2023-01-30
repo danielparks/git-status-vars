@@ -69,7 +69,7 @@ where
 /// on `git init` to something other than the default branch, it will register
 /// the repo as non-empty even if there are no commits. (I’m not sure if this is
 /// a bug or not.)
-pub fn prepare_root(root: &Path) -> () {
+pub fn prepare_root(root: &Path) {
     dbg!(git2::Version::get());
     fs::write(
         root.join(".gitconfig"),
@@ -86,16 +86,16 @@ pub fn prepare_root(root: &Path) -> () {
 }
 
 /// Create a git repository.
-pub fn git_init(root: &Path, name: &str) -> () {
+pub fn git_init(root: &Path, name: &str) {
     git(root, ".", ["init", name]).unwrap();
 }
 
 /// Make a commit with files a and b.
 pub fn make_commit(root: &Path, repo: &str, n: u8) {
-    fs::write(root.join(repo).join("a"), format!("{}a", n)).unwrap();
-    fs::write(root.join(repo).join("b"), format!("{}b", n)).unwrap();
-    git(&root, repo, ["add", "a", "b"]).unwrap();
-    git(&root, repo, ["commit", "-m", &format!("commit {n}")]).unwrap();
+    fs::write(root.join(repo).join("a"), format!("{n}a")).unwrap();
+    fs::write(root.join(repo).join("b"), format!("{n}b")).unwrap();
+    git(root, repo, ["add", "a", "b"]).unwrap();
+    git(root, repo, ["commit", "-m", &format!("commit {n}")]).unwrap();
 }
 
 /// Check the output of git-status-vars against a string.
@@ -147,7 +147,7 @@ pub fn assert_git_status_vars(root: &Path, repo: &str, expected: &str) {
     };
 
     let re = Regex::new(r"_hash=[0-9a-f]{40}").unwrap();
-    let output = git_status_vars(&root, [repo]);
+    let output = git_status_vars(root, [repo]);
     let output = output.to_str_lossy();
     let output = re.replace_all(&output, "_hash=@HASH@");
 
