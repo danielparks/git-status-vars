@@ -4,6 +4,13 @@
 //! The primary entrance to this code is [`summarize_repository()`]. It opens a
 //! [`Repository`], then calls [`summarize_opened_repository()`] on it.
 //!
+//! # Versioning
+//!
+//! This follows semantic versioning for the command line utility, not the crate
+//! API. Breaking changes to the API are not guaranteed to involve a major
+//! version change, since I don’t anticipate this being used as a crate by
+//! anyone else.
+//!
 //! [README.md]: https://github.com/danielparks/git-status-vars/blob/main/README.md
 use git2::Branch;
 use git2::ReferenceType;

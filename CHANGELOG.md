@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Document versioning policy — the version primarily tracks changes to the
+  binary, not the crate as a library.
+
 ## Release 0.2.4 (2023-01-21)
 
 ### Security fixes
