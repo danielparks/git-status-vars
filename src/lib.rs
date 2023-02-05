@@ -4,6 +4,8 @@
 //! The primary entrance to this code is [`summarize_repository()`]. It opens a
 //! [`Repository`], then calls [`summarize_opened_repository()`] on it.
 //!
+//! Currently the minimum supported Rust version (MSRV) is **1.60**.
+//!
 //! # Versioning
 //!
 //! This follows semantic versioning for the command line utility, not the crate

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 * Document versioning policy — the version primarily tracks changes to the
   binary, not the crate as a library.
+* Document that the minimum supported Rust version (MSRV) is 1.60.
 
 ## Release 0.2.4 (2023-01-21)
 
