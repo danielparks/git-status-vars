@@ -11,6 +11,7 @@ keywords = ["git", "shell", "prompt", "zsh", "bash"]
 categories = ["development-tools", "command-line-utilities"]
 license = "MIT OR Apache-2.0"
 edition = "2021"
+rust-version = "1.60"
 
 [dependencies]
 clap = { version = "4.0.16", features = ["derive"] }
