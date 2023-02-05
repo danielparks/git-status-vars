@@ -9,6 +9,12 @@ During the release process a new “Release” header is added and the changes f
 the current release are added to the git tag and to the [release
 description][releases] on GitHub.
 
+## Versioning
+
+This follows semantic versioning for the command line utility, not the crate
+API. Breaking changes to the API are not guaranteed to involve a major version
+change, since I don’t anticipate this being used as a crate by anyone else.
+
 ## Release process
 
  1. Run `./release.sh X.Y.Z` to update versions in code. If the diff looks good,
