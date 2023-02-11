@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 use clap::Parser;
 use git2::Repository;
 use git_status_vars::{summarize_repository, ShellWriter};

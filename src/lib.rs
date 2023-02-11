@@ -14,6 +14,9 @@
 //! anyone else.
 //!
 //! [README.md]: https://github.com/danielparks/git-status-vars/blob/main/README.md
+
+#![forbid(unsafe_code)]
+
 use git2::Branch;
 use git2::ReferenceType;
 use git2::Repository;
