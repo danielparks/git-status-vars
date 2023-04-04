@@ -145,7 +145,17 @@ Currently the minimum supported Rust version (MSRV) is **1.60**.
 See [DEVELOPMENT.md](DEVELOPMENT.md) for notes on contributing to this repo,
 the license, how changes are tracked, and how releases are made.
 
+### Development status
+
+This is stable. I don’t have plans for additional features, but if you have
+ideas please either submit an [issue][] or a [pull request][].
+
+I will periodically update this to ensure that it doesn’t bit rot as
+dependencies are updated, but you should not expect active development.
+
 [binstall]: https://github.com/cargo-bins/cargo-binstall
 [crates.io]: https://crates.io/crates/git-status-vars
 [docs.rs]: https://docs.rs/git-status-vars/latest/git_status_vars/
 [releases]: https://github.com/danielparks/git-status-vars/releases
+[issue]: https://github.com/danielparks/git-status-vars/issues
+[pull request]: https://github.com/danielparks/git-status-vars/pulls

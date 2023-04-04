@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Document development status — stable; no more planned features.
 * Document versioning policy — the version primarily tracks changes to the
   binary, not the crate as a library.
 * Document that the minimum supported Rust version (MSRV) is 1.60.
