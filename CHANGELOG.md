@@ -2,12 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## main branch
+## Release 1.0.0 (2023-04-05)
 
+Bumping to version 1.0.0 to indicate stability. There are no functional changes.
+
+* Update all dependencies.
+* Update the minimum supported Rust version (MSRV) from 1.60 to 1.64.
 * Document development status — stable; no more planned features.
 * Document versioning policy — the version primarily tracks changes to the
   binary, not the crate as a library.
-* Document that the minimum supported Rust version (MSRV) is 1.60.
 
 ## Release 0.2.4 (2023-01-21)
 

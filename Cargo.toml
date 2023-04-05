@@ -1,6 +1,6 @@
 [package]
 name = "git-status-vars"
-version = "0.2.4"
+version = "1.0.0"
 authors = ["Daniel Parks <oss-git-status-vars@demonhorse.org>"]
 description = "Summarize git repo info into shell variables (for use in a prompt)"
 homepage = "https://github.com/danielparks/git-status-vars"
@@ -11,11 +11,11 @@ keywords = ["git", "shell", "prompt", "zsh", "bash"]
 categories = ["development-tools", "command-line-utilities"]
 license = "MIT OR Apache-2.0"
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.64"
 
 [dependencies]
 clap = { version = "4.0.16", features = ["derive"] }
-git2 = { version = "0.16.1", default-features = false }
+git2 = { version = "0.17.0", default-features = false }
 shell-words = "1.1.0"
 
 [dev-dependencies]
