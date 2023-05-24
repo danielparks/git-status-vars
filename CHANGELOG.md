@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## main branch
+## Release 1.0.1 (2023-05-24)
 
 * Added missing crate documentation.
 * Updated dependencies.
