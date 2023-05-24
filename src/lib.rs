@@ -16,6 +16,13 @@
 //! [README.md]: https://github.com/danielparks/git-status-vars/blob/main/README.md
 
 #![forbid(unsafe_code)]
+#![warn(clippy::pedantic)]
+#![allow(
+    clippy::let_underscore_untyped,
+    clippy::manual_string_new,
+    clippy::map_unwrap_or
+)]
+#![warn(missing_docs)]
 
 use git2::Branch;
 use git2::ReferenceType;
@@ -24,6 +31,7 @@ use git2::{ErrorClass, ErrorCode};
 use git2::{Status, StatusOptions, StatusShow};
 use std::fmt;
 use std::io;
+use std::path::Path;
 
 mod shell_writer;
 pub use shell_writer::*;
@@ -31,12 +39,19 @@ pub use shell_writer::*;
 /// A reference in a git repository.
 #[derive(Debug, Default)]
 pub struct Reference {
+    /// The name of the reference, e.g. `"refs/heads/my_branch"`.
     pub name: String,
+
+    /// The kind of reference, e.g. `"symbolic"` or `"direct"`.
     pub kind: String,
+
+    /// An error encountered when trying to resolve the reference, or `""`.
     pub error: String,
 }
 
 impl Reference {
+    /// Create a new reference without an error.
+    #[must_use]
     pub fn new<N, K>(name: N, kind: K) -> Self
     where
         N: AsRef<str>,
@@ -49,6 +64,8 @@ impl Reference {
         }
     }
 
+    /// Create a new reference with an error.
+    #[must_use]
     pub fn new_with_error<N, K, E>(name: N, kind: K, error: E) -> Self
     where
         N: AsRef<str>,
@@ -62,14 +79,21 @@ impl Reference {
         }
     }
 
+    /// Create a new symbolic reference.
+    #[must_use]
     pub fn symbolic(name: &str) -> Self {
         Reference::new(name, "symbolic")
     }
 
+    /// Create a new direct reference.
+    #[must_use]
     pub fn direct(name: &str) -> Self {
         Reference::new(name, "direct")
     }
 
+    /// Get the short name of a reference if it’s a tag or branch. Otherwise,
+    /// get the full name.
+    #[must_use]
     pub fn short(&self) -> &str {
         self.name
             .strip_prefix("refs/heads/")
@@ -91,10 +115,25 @@ impl ShellVars for Reference {
 /// The trail of a `HEAD` reference.
 #[derive(Debug, Default)]
 pub struct Head {
+    /// The trail of references leading to the actual underlying commit.
     pub trail: Vec<Reference>,
+
+    /// The hash of the commit.
     pub hash: String,
+
+    /// How many commits are we ahead of upstream?
+    ///
+    /// `None` means that there is no upstream, or there is no equivalent branch
+    /// in upstream.
     pub ahead_of_upstream: Option<usize>,
+
+    /// How many commits are we behind upstream?
+    ///
+    /// `None` means that there is no upstream, or there is no equivalent branch
+    /// in upstream.
     pub behind_upstream: Option<usize>,
+
+    /// An error encountered trying to calculate differences with upstream.
     pub upstream_error: String,
 }
 
@@ -115,7 +154,7 @@ impl ShellVars for Head {
 ///
 /// This takes the `Result` from one of the `Repository::open()` functions.
 ///
-/// ### Example
+/// # Example
 ///
 /// ```no_run
 /// use git_status_vars::{summarize_repository, ShellWriter};
@@ -128,7 +167,7 @@ pub fn summarize_repository<W: std::io::Write>(
     opened: Result<Repository, git2::Error>,
 ) {
     let result = match opened {
-        Ok(repository) => summarize_opened_repository(out, repository),
+        Ok(repository) => summarize_opened_repository(out, &repository),
         Err(error)
             if error.code() == ErrorCode::NotFound
                 && error.class() == ErrorClass::Repository =>
@@ -147,7 +186,7 @@ pub fn summarize_repository<W: std::io::Write>(
 
 /// Summarize information about a successfully opened repository.
 ///
-/// ### Example
+/// # Example
 ///
 /// ```no_run
 /// use git_status_vars::{summarize_opened_repository, ShellWriter};
@@ -155,28 +194,40 @@ pub fn summarize_repository<W: std::io::Write>(
 ///
 /// summarize_opened_repository(
 ///     &ShellWriter::default(),
-///     Repository::open_from_env().unwrap(),
+///     &Repository::open_from_env().unwrap(),
 /// ).unwrap();
 /// ```
+///
+/// # Errors
+///
+/// This will return a [`git2::Error`] if there were problems getting repository
+/// information. This is careful to load all repository information (and thus
+/// encountering any errors) before generating any output.
 pub fn summarize_opened_repository<W: std::io::Write>(
     out: &ShellWriter<W>,
-    repository: Repository,
+    repository: &Repository,
 ) -> Result<(), git2::Error> {
-    out.write_var_debug("repo_state", repository.state());
-    out.write_var(
-        "repo_workdir",
-        display_option(repository.workdir().map(|path| path.display())),
-    );
-    out.write_var("repo_empty", repository.is_empty()?);
-    out.write_var("repo_bare", repository.is_bare());
-    out.group("head").write_vars(&head_info(&repository)?);
-    out.write_vars(&count_changes(&repository)?);
+    let state = repository.state();
+    let workdir = display_option(repository.workdir().map(Path::display));
+    let empty = repository.is_empty()?;
+    let bare = repository.is_bare();
+    let head = &head_info(repository);
+    let changes = &count_changes(repository)?;
+
+    out.write_var_debug("repo_state", state);
+    out.write_var("repo_workdir", workdir);
+    out.write_var("repo_empty", empty);
+    out.write_var("repo_bare", bare);
+    out.group("head").write_vars(head);
+    out.write_vars(changes);
 
     Ok(())
 }
 
 /// Trace the `HEAD` reference for a repository.
-pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
+#[allow(clippy::similar_names)]
+#[must_use]
+pub fn head_info(repository: &Repository) -> Head {
     let mut current = "HEAD".to_string();
     let mut head = Head::default();
     loop {
@@ -225,10 +276,17 @@ pub fn head_info(repository: &Repository) -> Result<Head, git2::Error> {
         }
     }
 
-    Ok(head)
+    head
 }
 
 /// Get the (ahead, behind) count of HEAD versus its upstream branch.
+///
+/// # Errors
+///
+/// This will return [`git2::Error`] if there were problems resolving the
+/// the repository head, or if there was an error finding the upstream branch
+/// (but it will return `Ok(None)` if there simply is no upstream or upstream
+/// branch).
 pub fn get_upstream_difference(
     repository: &Repository,
 ) -> Result<Option<(usize, usize)>, git2::Error> {
@@ -254,9 +312,16 @@ fn display_option(s: Option<impl fmt::Display>) -> String {
 /// Track changes in the working tree and index (staged area).
 #[derive(Debug, Default)]
 pub struct ChangeCounters {
+    /// The number of untracked files (not in the index).
     pub untracked: usize,
+
+    /// The number of files that have been modified, but haven’t been staged.
     pub unstaged: usize,
+
+    /// The number of files that have been staged.
     pub staged: usize,
+
+    /// The number of files with conflicts.
     pub conflicted: usize,
 }
 
@@ -282,6 +347,11 @@ impl ShellVars for ChangeCounters {
 }
 
 /// Count changes in the working tree and index (staged area) of a repository.
+///
+/// # Errors
+///
+/// This will return [`git2::Error`] if there was an error getting status
+/// information from the repository.
 pub fn count_changes(
     repository: &Repository,
 ) -> Result<ChangeCounters, git2::Error> {

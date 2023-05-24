@@ -26,6 +26,7 @@ impl<W: io::Write> ShellWriter<W> {
     /// ShellWriter::new(&mut buffer, "").group("group").write_var("var", "value");
     /// assert_eq!(buffer, b"group_var=value\n");
     /// ```
+    #[must_use]
     pub fn new(writer: W, prefix: impl Display) -> Self {
         Self {
             writer: Rc::new(RefCell::new(writer)),
@@ -64,6 +65,7 @@ impl<W: io::Write> ShellWriter<W> {
     /// ```sh
     /// prefix_group_var=value
     /// ```
+    #[must_use]
     pub fn group(&self, group: impl Display) -> ShellWriter<W> {
         ShellWriter {
             writer: self.writer.clone(),
@@ -76,6 +78,7 @@ impl<W: io::Write> ShellWriter<W> {
     /// ```sh
     /// prefix_groupN_var=value
     /// ```
+    #[must_use]
     pub fn group_n(
         &self,
         prefix: impl Display,
@@ -87,6 +90,7 @@ impl<W: io::Write> ShellWriter<W> {
 
 impl ShellWriter<io::Stdout> {
     /// Create a new `ShellWriter` for [`io::stdout()`] and a prefix.
+    #[must_use]
     pub fn with_prefix(prefix: String) -> Self {
         Self::new(io::stdout(), prefix)
     }
@@ -113,6 +117,7 @@ where
 
 /// An object that can be written as a group of shell variables.
 pub trait ShellVars {
+    /// Write `self` to the shell writer `out`.
     fn write_to_shell<W: io::Write>(&self, out: &ShellWriter<W>);
 }
 

@@ -1,4 +1,6 @@
 #![forbid(unsafe_code)]
+#![warn(clippy::pedantic)]
+#![allow(clippy::let_underscore_untyped, clippy::map_unwrap_or)]
 
 use clap::Parser;
 use git2::Repository;
@@ -18,9 +20,7 @@ struct Params {
 
 fn main() {
     let params = Params::parse();
-    let out = ShellWriter::with_prefix(
-        params.prefix.unwrap_or_else(|| String::from("")),
-    );
+    let out = ShellWriter::with_prefix(params.prefix.unwrap_or_default());
 
     if params.repositories.is_empty() {
         summarize_repository(&out, Repository::open_from_env());
