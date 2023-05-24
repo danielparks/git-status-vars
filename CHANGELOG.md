@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Added missing crate documentation.
+
+### Bug fixes
+
+* Ensured that `summarize_opened_repository()` would not produce output before
+  returning an error. This could have caused confusing output from
+  `summarize_repository()`.
+
 ## Release 1.0.0 (2023-04-05)
 
 Bumping to version 1.0.0 to indicate stability. There are no functional changes.
