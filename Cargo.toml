@@ -24,4 +24,4 @@ bstr = { version = "1.1.0", default-features = false, features = ["std"] }
 duct = "0.13.6"
 pretty_assertions = "1.3.0"
 regex = "1.7.0"
-target-test-dir = "0.2.0"
+target-test-dir = "0.3.0"

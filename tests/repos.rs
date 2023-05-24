@@ -1,11 +1,12 @@
 use std::fs;
-use std::path::PathBuf;
-use target_test_dir::test_with_dir;
+use target_test_dir::with_test_dir;
 
 mod helpers;
 
-#[test_with_dir]
-fn nonexistent(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn nonexistent() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
     assert_eq!(
         "repo_state=NotFound\n",
@@ -13,8 +14,10 @@ fn nonexistent(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn empty(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn empty() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -44,8 +47,10 @@ fn empty(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn empty_untracked(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn empty_untracked() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -76,8 +81,10 @@ fn empty_untracked(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn empty_added(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn empty_added() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -109,8 +116,10 @@ fn empty_added(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn empty_untracked_added(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn empty_untracked_added() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -143,8 +152,10 @@ fn empty_untracked_added(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn commit(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn commit() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -175,8 +186,10 @@ fn commit(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn commit_delete(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn commit_delete() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -208,8 +221,10 @@ fn commit_delete(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn commit_delete_staged(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn commit_delete_staged() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -241,8 +256,10 @@ fn commit_delete_staged(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn commit_modified(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn commit_modified() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -274,8 +291,10 @@ fn commit_modified(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn commit_modified_staged(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn commit_modified_staged() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -308,8 +327,10 @@ fn commit_modified_staged(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn detached(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn detached() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -338,8 +359,10 @@ fn detached(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn branch(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn branch() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -371,8 +394,10 @@ fn branch(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn sym_ref(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn sym_ref() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -415,8 +440,10 @@ fn sym_ref(root: PathBuf) {
 }
 
 // Tags are actually just a detached HEAD. Including because why not.
-#[test_with_dir]
-fn tag(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn tag() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -446,8 +473,10 @@ fn tag(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn cherry_pick(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn cherry_pick() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -484,8 +513,10 @@ fn cherry_pick(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn cherry_pick_staged(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn cherry_pick_staged() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -524,8 +555,10 @@ fn cherry_pick_staged(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn cherry_pick_unstaged(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn cherry_pick_unstaged() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -565,8 +598,10 @@ fn cherry_pick_unstaged(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn conflict(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn conflict() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "repo");
@@ -603,8 +638,10 @@ fn conflict(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn bare(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn bare() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "upstream");
@@ -636,8 +673,10 @@ fn bare(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn ahead_1(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn ahead_1() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "upstream");
@@ -670,8 +709,10 @@ fn ahead_1(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn ahead_1_behind_1(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn ahead_1_behind_1() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "upstream");
@@ -706,8 +747,10 @@ fn ahead_1_behind_1(root: PathBuf) {
     );
 }
 
-#[test_with_dir]
-fn behind_1(root: PathBuf) {
+#[test]
+#[with_test_dir]
+fn behind_1() {
+    let root = get_test_dir!();
     helpers::prepare_root(&root);
 
     helpers::git_init(&root, "upstream");
