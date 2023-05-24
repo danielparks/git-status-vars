@@ -2,7 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## main branch
+## Release 1.0.2 (2023-05-24)
+
+* Update documentation to reflect that the minimum supported Rust version
+  (MSRV) is 1.64.
 
 ## Release 1.0.1 (2023-05-24)
 

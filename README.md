@@ -134,11 +134,11 @@ I have not tested this on large repositories.
 
 [![docs.rs](https://img.shields.io/docsrs/git-status-vars)][docs.rs]
 [![Crates.io](https://img.shields.io/crates/v/git-status-vars)][crates.io]
-![Rust version 1.60+](https://img.shields.io/badge/Rust%20version-1.60%2B-success)
+![Rust version 1.64+](https://img.shields.io/badge/Rust%20version-1.64%2B-success)
 
 I’m not sure how useful it is, but this may be used from other Rust code.
 
-Currently the minimum supported Rust version (MSRV) is **1.60**.
+Currently the minimum supported Rust version (MSRV) is **1.64**.
 
 ## Development and contributions
 
