@@ -8,7 +8,10 @@ use std::rc::Rc;
 /// See [`ShellWriter::new()`].
 #[derive(Clone)]
 pub struct ShellWriter<W: io::Write> {
+    /// The output stream to write to.
     writer: Rc<RefCell<W>>,
+
+    /// The prefix to add before every key, e.g. `"group_"` or `""`.
     prefix: String,
 }
 

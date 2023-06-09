@@ -22,7 +22,7 @@
     clippy::manual_string_new,
     clippy::map_unwrap_or
 )]
-#![warn(missing_docs)]
+#![warn(missing_docs, clippy::missing_docs_in_private_items)]
 
 use git2::Branch;
 use git2::ReferenceType;
@@ -33,6 +33,7 @@ use std::fmt;
 use std::io;
 use std::path::Path;
 
+/// Manage outputting shell variables.
 mod shell_writer;
 pub use shell_writer::*;
 
@@ -305,6 +306,7 @@ pub fn get_upstream_difference(
     }
 }
 
+/// Format `Option<impl fmt::Display>` for display. `None` becomes `""`.
 fn display_option(s: Option<impl fmt::Display>) -> String {
     s.map(|s| s.to_string()).unwrap_or_else(|| "".to_string())
 }
