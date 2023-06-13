@@ -1,12 +1,20 @@
+//! git-status-vars executable.
+
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic)]
-#![allow(clippy::let_underscore_untyped, clippy::map_unwrap_or)]
+#![allow(
+    clippy::let_underscore_untyped,
+    clippy::manual_string_new,
+    clippy::map_unwrap_or
+)]
+#![warn(missing_docs, clippy::missing_docs_in_private_items)]
 
 use clap::Parser;
 use git2::Repository;
 use git_status_vars::{summarize_repository, ShellWriter};
 use std::path::PathBuf;
 
+/// Parameters to configure executable.
 #[derive(Debug, clap::Parser)]
 #[clap(version, about)]
 struct Params {
