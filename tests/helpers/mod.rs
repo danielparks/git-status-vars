@@ -48,7 +48,7 @@ where
     I: IntoIterator<Item = S>,
     S: Into<OsString>,
 {
-    let args: Vec<OsString> = args.into_iter().map(|arg| arg.into()).collect();
+    let args: Vec<OsString> = args.into_iter().map(Into::into).collect();
     let shell_args =
         shell_words::join(args.iter().map(|arg| arg.to_string_lossy()));
 
@@ -137,7 +137,7 @@ pub fn assert_git_status_vars(root: &Path, repo: &str, expected: &str) {
     let expected = if expected.bytes().next() == Some(b'\n') {
         if let Some(i) = expected[1..].find(|c: char| c != ' ') {
             // We skipped the first newline, so add 1 to the result.
-            expected[i + 1..].replace(&expected[..i + 1], "\n")
+            expected[i + 1..].replace(&expected[..=i], "\n")
         } else {
             // Didn’t find non-space character.
             String::from("")
