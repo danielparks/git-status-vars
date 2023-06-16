@@ -26,7 +26,7 @@
 // Require docs on everything
 #![warn(missing_docs, clippy::missing_docs_in_private_items)]
 // Other restriction lints
-#![warn(clippy::arithmetic_side_effects)]
+#![warn(clippy::arithmetic_side_effects, clippy::dbg_macro)]
 
 use git2::Branch;
 use git2::ReferenceType;
