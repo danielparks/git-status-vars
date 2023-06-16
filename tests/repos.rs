@@ -1,11 +1,15 @@
 #![forbid(unsafe_code)]
-#![warn(clippy::pedantic)]
+#![warn(clippy::nursery, clippy::pedantic)]
 #![allow(
     clippy::let_underscore_untyped,
     clippy::manual_string_new,
-    clippy::map_unwrap_or
+    clippy::map_unwrap_or,
+    clippy::module_name_repetitions
 )]
+// Require docs on everything
 #![warn(missing_docs, clippy::missing_docs_in_private_items)]
+// Other restriction lints
+#![warn(clippy::arithmetic_side_effects)]
 
 use std::fs;
 use target_test_dir::with_test_dir;

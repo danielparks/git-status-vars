@@ -1,13 +1,17 @@
 //! git-status-vars executable.
 
 #![forbid(unsafe_code)]
-#![warn(clippy::pedantic)]
+#![warn(clippy::nursery, clippy::pedantic)]
 #![allow(
     clippy::let_underscore_untyped,
     clippy::manual_string_new,
-    clippy::map_unwrap_or
+    clippy::map_unwrap_or,
+    clippy::module_name_repetitions
 )]
+// Require docs on everything
 #![warn(missing_docs, clippy::missing_docs_in_private_items)]
+// Other restriction lints
+#![warn(clippy::arithmetic_side_effects)]
 
 use clap::Parser;
 use git2::Repository;
@@ -38,7 +42,7 @@ fn main() {
         out.write_var("repo_count", params.repositories.len());
         for (i, repo_path) in params.repositories.iter().enumerate() {
             println!();
-            let repo_out = &out.group_n("repo", i + 1);
+            let repo_out = &out.group_n("repo", i.wrapping_add(1));
             repo_out.write_var("path", repo_path.display());
             summarize_repository(repo_out, Repository::open(repo_path));
         }

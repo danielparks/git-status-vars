@@ -69,8 +69,8 @@ impl<W: io::Write> ShellWriter<W> {
     /// prefix_group_var=value
     /// ```
     #[must_use]
-    pub fn group(&self, group: impl Display) -> ShellWriter<W> {
-        ShellWriter {
+    pub fn group(&self, group: impl Display) -> Self {
+        Self {
             writer: self.writer.clone(),
             prefix: format!("{}{}_", self.prefix, group),
         }
@@ -82,11 +82,7 @@ impl<W: io::Write> ShellWriter<W> {
     /// prefix_groupN_var=value
     /// ```
     #[must_use]
-    pub fn group_n(
-        &self,
-        prefix: impl Display,
-        n: impl Display,
-    ) -> ShellWriter<W> {
+    pub fn group_n(&self, prefix: impl Display, n: impl Display) -> Self {
         self.group(format!("{prefix}{n}"))
     }
 }
@@ -106,10 +102,7 @@ impl Default for ShellWriter<io::Stdout> {
     }
 }
 
-impl<W: io::Write> Debug for ShellWriter<W>
-where
-    W: Debug,
-{
+impl<W: io::Write + Debug> Debug for ShellWriter<W> {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt.debug_struct("ShellWriter")
             .field("writer", &self.writer)
