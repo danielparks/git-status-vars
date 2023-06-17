@@ -9,7 +9,7 @@
 // Require docs on everything
 #![warn(missing_docs, clippy::missing_docs_in_private_items)]
 // Other restriction lints
-#![warn(clippy::arithmetic_side_effects)]
+#![warn(clippy::arithmetic_side_effects, clippy::dbg_macro)]
 
 use std::fs;
 use target_test_dir::with_test_dir;

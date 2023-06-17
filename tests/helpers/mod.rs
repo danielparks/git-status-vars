@@ -70,7 +70,6 @@ where
 /// the repo as non-empty even if there are no commits. (I’m not sure if this is
 /// a bug or not.)
 pub fn prepare_root(root: &Path) {
-    dbg!(git2::Version::get());
     fs::write(
         root.join(".gitconfig"),
         "[user]\n\
