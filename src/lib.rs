@@ -16,13 +16,17 @@
 //! [README.md]: https://github.com/danielparks/git-status-vars/blob/main/README.md
 
 #![forbid(unsafe_code)]
-#![warn(clippy::pedantic)]
+#![warn(clippy::nursery, clippy::pedantic)]
 #![allow(
     clippy::let_underscore_untyped,
     clippy::manual_string_new,
-    clippy::map_unwrap_or
+    clippy::map_unwrap_or,
+    clippy::module_name_repetitions
 )]
+// Require docs on everything
 #![warn(missing_docs, clippy::missing_docs_in_private_items)]
+// Other restriction lints
+#![warn(clippy::arithmetic_side_effects)]
 
 use git2::Branch;
 use git2::ReferenceType;
@@ -58,7 +62,7 @@ impl Reference {
         N: AsRef<str>,
         K: AsRef<str>,
     {
-        Reference {
+        Self {
             name: name.as_ref().to_string(),
             kind: kind.as_ref().to_string(),
             error: "".to_string(),
@@ -73,7 +77,7 @@ impl Reference {
         K: AsRef<str>,
         E: fmt::Debug,
     {
-        Reference {
+        Self {
             name: name.as_ref().to_string(),
             kind: kind.as_ref().to_string(),
             error: format!("{error:?}"),
@@ -83,13 +87,13 @@ impl Reference {
     /// Create a new symbolic reference.
     #[must_use]
     pub fn symbolic(name: &str) -> Self {
-        Reference::new(name, "symbolic")
+        Self::new(name, "symbolic")
     }
 
     /// Create a new direct reference.
     #[must_use]
     pub fn direct(name: &str) -> Self {
-        Reference::new(name, "direct")
+        Self::new(name, "direct")
     }
 
     /// Get the short name of a reference if it’s a tag or branch. Otherwise,
@@ -140,8 +144,11 @@ pub struct Head {
 
 impl ShellVars for Head {
     fn write_to_shell<W: io::Write>(&self, out: &ShellWriter<W>) {
-        out.write_var("ref_length", self.trail.len() - 1);
-        for (i, reference) in self.trail[1..].iter().enumerate() {
+        let trail = self.trail.get(1..).unwrap_or(&[]);
+        out.write_var("ref_length", trail.len());
+        for (i, reference) in trail.iter().enumerate() {
+            // self.trail is actually 1 longer, so i + 1 always fits.
+            #[allow(clippy::arithmetic_side_effects)]
             out.group_n("ref", i + 1).write_vars(reference);
         }
         out.write_var("hash", &self.hash);
@@ -293,14 +300,14 @@ pub fn get_upstream_difference(
 ) -> Result<Option<(usize, usize)>, git2::Error> {
     let local_ref = repository.head()?.resolve()?;
     if let Some(local_oid) = local_ref.target() {
-        let upstream_branch = Branch::wrap(local_ref).upstream()?;
-        if let Some(upstream_oid) = upstream_branch.get().target() {
-            repository
-                .graph_ahead_behind(local_oid, upstream_oid)
-                .map(Some)
-        } else {
-            Ok(None)
-        }
+        Branch::wrap(local_ref)
+            .upstream()?
+            .get()
+            .target()
+            .map(|upstream_oid| {
+                repository.graph_ahead_behind(local_oid, upstream_oid)
+            })
+            .transpose()
     } else {
         Ok(None)
     }
@@ -329,7 +336,7 @@ pub struct ChangeCounters {
 
 impl From<[usize; 4]> for ChangeCounters {
     fn from(array: [usize; 4]) -> Self {
-        ChangeCounters {
+        Self {
             untracked: array[0],
             unstaged: array[1],
             staged: array[2],
@@ -392,7 +399,7 @@ pub fn count_changes(
     for status in statuses.iter() {
         for (i, bits) in buckets.iter().enumerate() {
             if status.status().intersects(*bits) {
-                counters[i] += 1;
+                counters[i] = counters[i].saturating_add(1);
             }
         }
     }

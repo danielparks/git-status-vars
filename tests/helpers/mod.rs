@@ -133,26 +133,56 @@ pub fn make_commit(root: &Path, repo: &str, n: u8) {
 /// );
 /// ```
 pub fn assert_git_status_vars(root: &Path, repo: &str, expected: &str) {
-    // Strip first newline and indent
-    let expected = if expected.bytes().next() == Some(b'\n') {
-        if let Some(i) = expected[1..].find(|c: char| c != ' ') {
-            // We skipped the first newline, so add 1 to the result.
-            expected[i + 1..].replace(&expected[..=i], "\n")
-        } else {
-            // Didn’t find non-space character.
-            String::from("")
-        }
-    } else {
-        expected.to_string()
-    };
-
     let re = Regex::new(r"_hash=[0-9a-f]{40}").unwrap();
     let output = git_status_vars(root, [repo]);
     let output = output.to_str_lossy();
     let output = re.replace_all(&output, "_hash=@HASH@");
 
-    assert_str_eq!(
-        expected.replace("@REPO@", &root.join(repo).display().to_string()),
-        output,
-    );
+    let expected = strip_indent(expected)
+        .replace("@REPO@", &root.join(repo).display().to_string());
+    assert_str_eq!(expected, output);
+}
+
+/// Given string in a certain format, strip the indent.
+///
+/// ```
+/// assert_eq!(
+///     strip_indent("
+///         No newline before this.
+///         Second line.
+///             Indented line.
+///         "),
+///     "No newline before this.\nSecond line.\n    Indented line.\n",
+/// );
+/// ```
+///
+/// If the first character is a newline, then it and all the spaces following it
+/// will be removed, and that many spaces will be removed from the beginning of
+/// all following lines.
+///
+/// ```
+/// let unchanged = "Doesn’t start with a newline
+///     This indent will not be removed.
+///     In fact, nothing will change.";
+/// assert_eq!(strip_indent(unchanged), unchanged);
+/// ```
+pub fn strip_indent(input: &str) -> String {
+    input
+        .strip_prefix('\n')
+        .map(|rest| rest.trim_start_matches(' ')) // Strip first indent.
+        .map(|rest| {
+            // Get the length of the "\n   "-like prefix. (This is always safe.)
+            #[allow(clippy::arithmetic_side_effects)]
+            let prefix_len = input.len() - rest.len();
+            if prefix_len > 1 {
+                // There was an indent. Replace all newline plus indent
+                // sequences with plain "\n".
+                let newline_indent = &input[..prefix_len];
+                rest.replace(newline_indent, "\n")
+            } else {
+                // No indent. Just leave off the initial newline.
+                String::from(rest)
+            }
+        })
+        .unwrap_or_else(|| input.to_string())
 }
