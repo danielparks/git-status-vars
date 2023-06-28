@@ -26,7 +26,11 @@
 // Require docs on everything
 #![warn(missing_docs, clippy::missing_docs_in_private_items)]
 // Other restriction lints
-#![warn(clippy::arithmetic_side_effects, clippy::dbg_macro)]
+#![warn(
+    clippy::arithmetic_side_effects,
+    clippy::dbg_macro,
+    clippy::impl_trait_in_params
+)]
 
 use git2::Branch;
 use git2::ReferenceType;
@@ -314,7 +318,7 @@ pub fn get_upstream_difference(
 }
 
 /// Format `Option<impl fmt::Display>` for display. `None` becomes `""`.
-fn display_option(s: Option<impl fmt::Display>) -> String {
+fn display_option<V: fmt::Display>(s: Option<V>) -> String {
     s.map(|s| s.to_string()).unwrap_or_else(|| "".to_string())
 }
 
