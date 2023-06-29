@@ -90,7 +90,7 @@ impl<W: io::Write> ShellWriter<W> {
 impl ShellWriter<io::Stdout> {
     /// Create a new `ShellWriter` for [`io::stdout()`] and a prefix.
     #[must_use]
-    pub fn with_prefix(prefix: String) -> Self {
+    pub fn with_prefix(prefix: impl Display) -> Self {
         Self::new(io::stdout(), prefix)
     }
 }
