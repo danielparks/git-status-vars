@@ -15,22 +15,9 @@
 //!
 //! [README.md]: https://github.com/danielparks/git-status-vars/blob/main/README.md
 
+// Most lint configuration is in lints.toml, but that isn’t supported by
+// cargo-geiger, and it only supports deny, not forbid.
 #![forbid(unsafe_code)]
-#![warn(clippy::nursery, clippy::pedantic)]
-#![allow(
-    clippy::let_underscore_untyped,
-    clippy::manual_string_new,
-    clippy::map_unwrap_or,
-    clippy::module_name_repetitions
-)]
-// Require docs on everything
-#![warn(missing_docs, clippy::missing_docs_in_private_items)]
-// Other restriction lints
-#![warn(
-    clippy::arithmetic_side_effects,
-    clippy::dbg_macro,
-    clippy::impl_trait_in_params
-)]
 
 use git2::Branch;
 use git2::ReferenceType;
@@ -65,7 +52,7 @@ impl Reference {
         Self {
             name: name.to_string(),
             kind: kind.to_string(),
-            error: "".to_string(),
+            error: "".to_owned(),
         }
     }
 
@@ -236,7 +223,7 @@ pub fn summarize_opened_repository<W: std::io::Write>(
 #[allow(clippy::similar_names)]
 #[must_use]
 pub fn head_info(repository: &Repository) -> Head {
-    let mut current = "HEAD".to_string();
+    let mut current = "HEAD".to_owned();
     let mut head = Head::default();
     loop {
         match repository.find_reference(&current) {
@@ -255,7 +242,7 @@ pub fn head_info(repository: &Repository) -> Head {
                     let target = reference
                         .symbolic_target()
                         .expect("Symbolic ref should have symbolic target");
-                    current = target.to_string();
+                    current = target.to_owned();
                 }
                 None => {
                     head.trail.push(Reference::new(
@@ -315,7 +302,7 @@ pub fn get_upstream_difference(
 
 /// Format `Option<impl fmt::Display>` for display. `None` becomes `""`.
 fn display_option<V: fmt::Display>(s: Option<V>) -> String {
-    s.map(|s| s.to_string()).unwrap_or_else(|| "".to_string())
+    s.map(|s| s.to_string()).unwrap_or_else(|| "".to_owned())
 }
 
 /// Track changes in the working tree and index (staged area).

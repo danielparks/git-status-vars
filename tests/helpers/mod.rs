@@ -183,5 +183,5 @@ pub fn strip_indent(input: &str) -> String {
                 String::from(rest)
             }
         })
-        .unwrap_or_else(|| input.to_string())
+        .unwrap_or_else(|| input.to_owned())
 }
