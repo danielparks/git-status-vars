@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+### API breaking changes
+
+* Switched `Reference::new()` and friends to accept types that implement
+  `std::fmt::Display` instead of `AsRef<str>`. The functions convert the
+  parameters to owned `String`s with `to_string()` anyway, so this more
+  accurately reflects what the functions are doing.
+
+### Other API changes
+
+* `ShellWriter::with_prefix()` now accepts anything that implements
+  `std::fmt::Display` as the prefix rather than just `String`s.
+
 ## Release 1.0.2 (2023-05-24)
 
 * Update documentation to reflect that the minimum supported Rust version

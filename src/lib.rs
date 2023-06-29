@@ -61,14 +61,10 @@ pub struct Reference {
 impl Reference {
     /// Create a new reference without an error.
     #[must_use]
-    pub fn new<N, K>(name: N, kind: K) -> Self
-    where
-        N: AsRef<str>,
-        K: AsRef<str>,
-    {
+    pub fn new<N: fmt::Display, K: fmt::Display>(name: N, kind: K) -> Self {
         Self {
-            name: name.as_ref().to_string(),
-            kind: kind.as_ref().to_string(),
+            name: name.to_string(),
+            kind: kind.to_string(),
             error: "".to_string(),
         }
     }
@@ -77,26 +73,26 @@ impl Reference {
     #[must_use]
     pub fn new_with_error<N, K, E>(name: N, kind: K, error: E) -> Self
     where
-        N: AsRef<str>,
-        K: AsRef<str>,
+        N: fmt::Display,
+        K: fmt::Display,
         E: fmt::Debug,
     {
         Self {
-            name: name.as_ref().to_string(),
-            kind: kind.as_ref().to_string(),
+            name: name.to_string(),
+            kind: kind.to_string(),
             error: format!("{error:?}"),
         }
     }
 
     /// Create a new symbolic reference.
     #[must_use]
-    pub fn symbolic(name: &str) -> Self {
+    pub fn symbolic<N: fmt::Display>(name: N) -> Self {
         Self::new(name, "symbolic")
     }
 
     /// Create a new direct reference.
     #[must_use]
-    pub fn direct(name: &str) -> Self {
+    pub fn direct<N: fmt::Display>(name: N) -> Self {
         Self::new(name, "direct")
     }
 
@@ -246,14 +242,14 @@ pub fn head_info(repository: &Repository) -> Head {
         match repository.find_reference(&current) {
             Ok(reference) => match reference.kind() {
                 Some(ReferenceType::Direct) => {
-                    head.trail.push(Reference::direct(&display_option(
+                    head.trail.push(Reference::direct(display_option(
                         reference.name(),
                     )));
                     head.hash = display_option(reference.target());
                     break;
                 }
                 Some(ReferenceType::Symbolic) => {
-                    head.trail.push(Reference::symbolic(&display_option(
+                    head.trail.push(Reference::symbolic(display_option(
                         reference.name(),
                     )));
                     let target = reference
