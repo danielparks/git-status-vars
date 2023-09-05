@@ -121,13 +121,13 @@ pub trait ShellVars {
 ///
 /// ```rust
 /// use git_status_vars::shell_quote;
-/// assert_eq!(shell_quote("a $b `c`\nd"), "'a $b `c`\nd'");
+/// assert_eq!(shell_quote("a $b `c`\nd"), "\"a \\$b \\`c\\`\nd\"");
 /// ```
 pub fn shell_quote<V: Display>(value: V) -> String {
-    shell_words::quote(&value.to_string()).into()
+    shlex::quote(&value.to_string()).into()
 }
 
 /// Format a value with [`Debug`] and quote it for safe shell insertion.
 pub fn shell_quote_debug<V: Debug>(value: V) -> String {
-    shell_words::quote(&format!("{value:?}")).into()
+    shlex::quote(&format!("{value:?}")).into()
 }

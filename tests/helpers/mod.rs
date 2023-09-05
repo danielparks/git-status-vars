@@ -48,9 +48,11 @@ where
     I: IntoIterator<Item = S>,
     S: Into<OsString>,
 {
-    let args: Vec<OsString> = args.into_iter().map(Into::into).collect();
-    let shell_args =
-        shell_words::join(args.iter().map(|arg| arg.to_string_lossy()));
+    let args: Vec<String> = args
+        .into_iter()
+        .map(|arg| arg.into().to_string_lossy().into_owned())
+        .collect();
+    let shell_args = shlex::join(args.iter().map(std::string::String::as_str));
 
     println!("`git {shell_args}` in {:?}", root.join(repo));
     let output = run_git(root, repo, args).run()?;

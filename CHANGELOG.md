@@ -16,6 +16,14 @@ All notable changes to this project will be documented in this file.
 * `ShellWriter::with_prefix()` now accepts anything that implements
   `std::fmt::Display` as the prefix rather than just `String`s.
 
+### Miscellaneous
+
+* Switched from [shell-words] to [shlex] for shell escaping since I’ve
+  contributed to that crate.
+
+[shell-words]: https://crates.io/crates/shell-words
+[shlex]: https://crates.io/crates/shlex
+
 ## Release 1.0.2 (2023-05-24)
 
 * Update documentation to reflect that the minimum supported Rust version
