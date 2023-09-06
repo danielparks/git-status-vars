@@ -14,7 +14,7 @@ where
     S: Into<OsString>,
 {
     let executable = cargo_bin(env!("CARGO_PKG_NAME"));
-    cmd(executable, args.into_iter())
+    cmd(executable, args)
         .dir(root)
         .env("HOME", root)
         .env("GIT_CONFIG_GLOBAL", root.join(".gitconfig"))
@@ -33,7 +33,7 @@ where
     I: IntoIterator<Item = S>,
     S: Into<OsString>,
 {
-    cmd("git", args.into_iter())
+    cmd("git", args)
         .dir(root.join(repo))
         .env("HOME", root)
         .env("GIT_CONFIG_GLOBAL", root.join(".gitconfig"))

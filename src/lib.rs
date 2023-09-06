@@ -157,6 +157,11 @@ impl ShellVars for Head {
 ///
 /// summarize_repository(&ShellWriter::default(), Repository::open_from_env());
 /// ```
+///
+/// # Panics
+///
+/// This may panic if it can’t resolve a symbolic reference to a symbolic
+/// target.
 pub fn summarize_repository<W: std::io::Write>(
     out: &ShellWriter<W>,
     opened: Result<Repository, git2::Error>,
@@ -198,6 +203,11 @@ pub fn summarize_repository<W: std::io::Write>(
 /// This will return a [`git2::Error`] if there were problems getting repository
 /// information. This is careful to load all repository information (and thus
 /// encountering any errors) before generating any output.
+///
+/// # Panics
+///
+/// This may panic if it can’t resolve a symbolic reference to a symbolic
+/// target.
 pub fn summarize_opened_repository<W: std::io::Write>(
     out: &ShellWriter<W>,
     repository: &Repository,
@@ -220,6 +230,11 @@ pub fn summarize_opened_repository<W: std::io::Write>(
 }
 
 /// Trace the `HEAD` reference for a repository.
+///
+/// # Panics
+///
+/// This may panic if it can’t resolve a symbolic reference to a symbolic
+/// target.
 #[allow(clippy::similar_names)]
 #[must_use]
 pub fn head_info(repository: &Repository) -> Head {
