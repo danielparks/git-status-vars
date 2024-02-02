@@ -687,7 +687,7 @@ fn ahead_1() {
     helpers::assert_git_status_vars(
         &root,
         "clone",
-        r#"
+        r"
         repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
@@ -705,7 +705,7 @@ fn ahead_1() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        "#,
+        ",
     );
 }
 
@@ -725,7 +725,7 @@ fn ahead_1_behind_1() {
     helpers::assert_git_status_vars(
         &root,
         "clone",
-        r#"
+        r"
         repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
@@ -743,7 +743,7 @@ fn ahead_1_behind_1() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        "#,
+        ",
     );
 }
 
@@ -762,7 +762,7 @@ fn behind_1() {
     helpers::assert_git_status_vars(
         &root,
         "clone",
-        r#"
+        r"
         repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
@@ -780,6 +780,6 @@ fn behind_1() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        "#,
+        ",
     );
 }
