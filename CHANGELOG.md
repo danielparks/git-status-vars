@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+### Security fixes
+
+* Upgrade [git2] dependency to 0.18.2 to fix [security vulnerabilities in
+  libgit2][GHSA-22q8-ghmq-63vf], including in revision parsing. These do not
+  appear to affect git-status-vars.
+
+[git2]: https://crates.io/crates/git2
+[GHSA-22q8-ghmq-63vf]: https://github.com/advisories/GHSA-22q8-ghmq-63vf
+
 ### API breaking changes
 
 * Switched `Reference::new()` and friends to accept types that implement
