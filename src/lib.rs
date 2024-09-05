@@ -257,7 +257,7 @@ pub fn head_info(repository: &Repository) -> Head {
                     let target = reference
                         .symbolic_target()
                         .expect("Symbolic ref should have symbolic target");
-                    current = target.to_owned();
+                    target.clone_into(&mut current);
                 }
                 None => {
                     head.trail.push(Reference::new(
