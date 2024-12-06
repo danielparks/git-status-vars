@@ -138,7 +138,7 @@ I have not tested this on large repositories.
 
 I’m not sure how useful it is, but this may be used from other Rust code.
 
-Currently the minimum supported Rust version (MSRV) is **1.64**.
+Currently the minimum supported Rust version (MSRV) is **1.74.1**.
 
 ## Development and contributions
 

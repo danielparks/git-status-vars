@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+### Security fixes
+
+* Upgrade indirect [anstream] dependency (used by [clap]) to fix [a security
+  vulnerability][GHSA-2rxc-gjrp-vjhx]. I am unsure if this affects
+  git-status-vars. This means the MSRV is now 1.74.1.
+
+[anstream]: https://crates.io/crates/anstream
+[clap]: https://crates.io/crates/clap
+[GHSA-2rxc-gjrp-vjhx]: https://github.com/advisories/GHSA-2rxc-gjrp-vjhx
+
 ## Release 1.0.3 (2024-02-12)
 
 ### Security fixes

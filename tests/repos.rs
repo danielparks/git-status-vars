@@ -1,3 +1,5 @@
+//! Tests results on various example repos.
+
 use std::fs;
 use target_test_dir::with_test_dir;
 
