@@ -4,7 +4,7 @@
 //! The primary entrance to this code is [`summarize_repository()`]. It opens a
 //! [`Repository`], then calls [`summarize_opened_repository()`] on it.
 //!
-//! Currently the minimum supported Rust version (MSRV) is **1.64**.
+//! Currently the minimum supported Rust version (MSRV) is **1.74.1**.
 //!
 //! # Versioning
 //!

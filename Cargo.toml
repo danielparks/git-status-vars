@@ -11,11 +11,11 @@ keywords = ["git", "shell", "prompt", "zsh", "bash"]
 categories = ["development-tools", "command-line-utilities"]
 license = "MIT OR Apache-2.0"
 edition = "2021"
-rust-version = "1.64"
+rust-version = "1.74.1"
 
 [dependencies]
-clap = { version = "4.0.16", features = ["derive"] }
-git2 = { version = "0.18.2", default-features = false }
+clap = { version = "4.5.23", features = ["derive"] }
+git2 = { version = "0.19.0", default-features = false }
 shell-words = "1.1.0"
 
 [dev-dependencies]
