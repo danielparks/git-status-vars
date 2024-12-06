@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## main branch
+## Release 1.0.4 (2024-12-05)
 
 ### Security fixes
 
