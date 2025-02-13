@@ -167,7 +167,7 @@ pub fn summarize_repository<W: std::io::Write>(
     opened: Result<Repository, git2::Error>,
 ) {
     let result = match opened {
-        Ok(repository) => summarize_opened_repository(out, &repository),
+        Ok(mut repository) => summarize_opened_repository(out, &mut repository),
         Err(error)
             if error.code() == ErrorCode::NotFound
                 && error.class() == ErrorClass::Repository =>
@@ -194,7 +194,7 @@ pub fn summarize_repository<W: std::io::Write>(
 ///
 /// summarize_opened_repository(
 ///     &ShellWriter::default(),
-///     &Repository::open_from_env().unwrap(),
+///     &mut Repository::open_from_env().unwrap(),
 /// ).unwrap();
 /// ```
 ///
@@ -210,7 +210,7 @@ pub fn summarize_repository<W: std::io::Write>(
 /// target.
 pub fn summarize_opened_repository<W: std::io::Write>(
     out: &ShellWriter<W>,
-    repository: &Repository,
+    repository: &mut Repository,
 ) -> Result<(), git2::Error> {
     let state = repository.state();
     let workdir = display_option(repository.workdir().map(Path::display));
@@ -218,6 +218,7 @@ pub fn summarize_opened_repository<W: std::io::Write>(
     let bare = repository.is_bare();
     let head = &head_info(repository);
     let changes = &count_changes(repository)?;
+    let stash = count_stash(repository)?;
 
     out.write_var_debug("repo_state", state);
     out.write_var("repo_workdir", workdir);
@@ -225,6 +226,7 @@ pub fn summarize_opened_repository<W: std::io::Write>(
     out.write_var("repo_bare", bare);
     out.group("head").write_vars(head);
     out.write_vars(changes);
+    out.write_var("stash_count", stash);
 
     Ok(())
 }
@@ -407,4 +409,25 @@ pub fn count_changes(
     }
 
     Ok(ChangeCounters::from(counters))
+}
+
+/// Count entries in stash.
+///
+/// Not sure why `repository` needs to be `mut` for this.
+///
+/// If there were somehow more than `usize::MAX` entries in stash, this would
+/// return `usize::MAX`.
+///
+/// # Errors
+///
+/// This will return [`git2::Error`] if there was an error getting status
+/// information from the repository.
+pub fn count_stash(repository: &mut Repository) -> Result<usize, git2::Error> {
+    let mut count: usize = 0;
+    repository.stash_foreach(|_, _, _| {
+        count = count.saturating_add(1);
+        true
+    })?;
+
+    Ok(count)
 }

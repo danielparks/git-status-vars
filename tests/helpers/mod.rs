@@ -127,7 +127,7 @@ pub fn make_commit(root: &Path, repo: &str, n: u8) {
 ///     head_ref1_error=''
 ///     head_hash=@HASH@
 ///     . . .
-///     conflicted_count=0
+///     stash_count=0
 ///     "#,
 /// );
 /// ```

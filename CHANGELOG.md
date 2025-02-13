@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Add `stash_count` variable to output containing the number of stashed changes.
+
+### API breaking changes
+
+* `summarize_opened_repository()` now takes a `mut` reference to a `Repository`.
+  This is necessary to count the number of stashed changes.
+
 ## Release 1.0.4 (2024-12-05)
 
 ### Security fixes
