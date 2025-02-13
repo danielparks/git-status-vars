@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## main branch
+## Release 1.1.1 (2025-02-12)
+
+* Bump version to fix release workflow.
 
 ## Release 1.1.0 (2025-02-12)
 
