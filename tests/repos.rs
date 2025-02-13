@@ -45,6 +45,7 @@ fn empty() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -79,6 +80,7 @@ fn empty_untracked() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -114,6 +116,7 @@ fn empty_added() {
         unstaged_count=0
         staged_count=1
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -150,6 +153,7 @@ fn empty_untracked_added() {
         unstaged_count=0
         staged_count=1
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -184,6 +188,7 @@ fn commit() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -219,6 +224,7 @@ fn commit_delete() {
         unstaged_count=1
         staged_count=0
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -254,6 +260,7 @@ fn commit_delete_staged() {
         unstaged_count=0
         staged_count=1
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -289,6 +296,7 @@ fn commit_modified() {
         unstaged_count=1
         staged_count=0
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -325,6 +333,7 @@ fn commit_modified_staged() {
         unstaged_count=0
         staged_count=1
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -357,6 +366,7 @@ fn detached() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -392,6 +402,7 @@ fn branch() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -437,6 +448,7 @@ fn sym_ref() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -471,6 +483,7 @@ fn tag() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -511,6 +524,7 @@ fn cherry_pick() {
         unstaged_count=0
         staged_count=0
         conflicted_count=2
+        stash_count=0
         "#,
     );
 }
@@ -553,6 +567,7 @@ fn cherry_pick_staged() {
         unstaged_count=0
         staged_count=1
         conflicted_count=1
+        stash_count=0
         "#,
     );
 }
@@ -596,6 +611,7 @@ fn cherry_pick_unstaged() {
         unstaged_count=1
         staged_count=0
         conflicted_count=1
+        stash_count=0
         "#,
     );
 }
@@ -636,6 +652,7 @@ fn conflict() {
         unstaged_count=0
         staged_count=0
         conflicted_count=2
+        stash_count=0
         "#,
     );
 }
@@ -671,6 +688,7 @@ fn bare() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         "#,
     );
 }
@@ -707,6 +725,7 @@ fn ahead_1() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         ",
     );
 }
@@ -745,6 +764,7 @@ fn ahead_1_behind_1() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         ",
     );
 }
@@ -782,6 +802,44 @@ fn behind_1() {
         unstaged_count=0
         staged_count=0
         conflicted_count=0
+        stash_count=0
         ",
+    );
+}
+
+#[test]
+#[with_test_dir]
+fn stashed_1() {
+    let root = get_test_dir!();
+    helpers::prepare_root(&root);
+
+    helpers::git_init(&root, "repo");
+    helpers::make_commit(&root, "repo", 1);
+    fs::write(root.join("repo").join("a"), "2a").unwrap();
+    helpers::git(&root, "repo", ["stash", "push", "a"]).unwrap();
+
+    helpers::assert_git_status_vars(
+        &root,
+        "repo",
+        r#"
+        repo_state=Clean
+        repo_workdir=@REPO@/
+        repo_empty=false
+        repo_bare=false
+        head_ref_length=1
+        head_ref1_name=refs/heads/main
+        head_ref1_short=main
+        head_ref1_kind=direct
+        head_ref1_error=''
+        head_hash=@HASH@
+        head_ahead=''
+        head_behind=''
+        head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        untracked_count=0
+        unstaged_count=0
+        staged_count=0
+        conflicted_count=0
+        stash_count=1
+        "#,
     );
 }

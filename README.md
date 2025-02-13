@@ -116,6 +116,7 @@ untracked_count=0
 unstaged_count=0
 staged_count=0
 conflicted_count=0
+stash_count=0
 ~/projects/git-status-vars ❯ cd /
 / ❯ git-status-vars
 repo_state=NotFound
