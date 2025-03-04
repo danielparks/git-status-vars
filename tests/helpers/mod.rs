@@ -52,7 +52,7 @@ where
     let shell_args =
         shell_words::join(args.iter().map(|arg| arg.to_string_lossy()));
 
-    println!("`git {shell_args}` in {:?}", root.join(repo));
+    println!("`git {shell_args}` in {}", root.join(repo).display());
     let output = run_git(root, repo, args).run()?;
     print!("{}", output.stdout.as_bstr());
     Ok(())
