@@ -27,6 +27,7 @@ use git2::{Status, StatusOptions, StatusShow};
 use std::fmt;
 use std::io;
 use std::path::Path;
+use std::time::Instant;
 
 /// Manage outputting shell variables.
 mod shell_writer;
@@ -212,13 +213,17 @@ pub fn summarize_opened_repository<W: std::io::Write>(
     out: &ShellWriter<W>,
     repository: &mut Repository,
 ) -> Result<(), git2::Error> {
-    let state = repository.state();
-    let workdir = display_option(repository.workdir().map(Path::display));
-    let empty = repository.is_empty()?;
-    let bare = repository.is_bare();
-    let head = &head_info(repository);
-    let changes = &count_changes(repository)?;
-    let stash = count_stash(repository)?;
+    let state = time("repository.state()", || repository.state());
+    let workdir = display_option(
+        time("repository.workdir()", || repository.workdir())
+            .map(Path::display),
+    );
+    let empty = time("repository.is_empty()", || repository.is_empty())?;
+    let bare = time("repository.is_bare()", || repository.is_bare());
+    let head = &time("head_info(repository)", || head_info(repository));
+    let changes =
+        &time("count_changes(repository)", || count_changes(repository))?;
+    let stash = time("count_stash(repository)", || count_stash(repository))?;
 
     out.write_var_debug("repo_state", state);
     out.write_var("repo_workdir", workdir);
@@ -430,4 +435,16 @@ pub fn count_stash(repository: &mut Repository) -> Result<usize, git2::Error> {
     })?;
 
     Ok(count)
+}
+
+/// Output the time a function takes in debug mode.
+fn time<D, F, R>(name: D, func: F) -> R
+where
+    D: fmt::Display,
+    F: FnOnce() -> R,
+{
+    let start = Instant::now();
+    let result = func();
+    tracing::debug!("{name}: {:?}", start.elapsed());
+    result
 }
