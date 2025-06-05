@@ -3,6 +3,7 @@
 use clap::Parser;
 use git2::Repository;
 use git_status_vars::{summarize_repository, ShellWriter};
+use std::io;
 use std::path::PathBuf;
 
 /// Parameters to configure executable.
@@ -15,11 +16,26 @@ struct Params {
     /// Prefix for each shell var line (e.g. 'local ')
     #[clap(long, short = 'p')]
     prefix: Option<String>,
+
+    /// Print timing information to stderr
+    #[clap(short, long)]
+    pub verbose: bool,
 }
 
 fn main() {
     let params = Params::parse();
     let out = ShellWriter::with_prefix(params.prefix.unwrap_or_default());
+
+    tracing_subscriber::fmt()
+        .with_writer(io::stderr)
+        .with_target(false)
+        .with_max_level(if params.verbose {
+            tracing::Level::DEBUG
+        } else {
+            tracing::Level::INFO
+        })
+        .compact()
+        .init();
 
     if params.repositories.is_empty() {
         summarize_repository(&out, Repository::open_from_env());
