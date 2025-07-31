@@ -17,6 +17,8 @@
 
 // Most lint configuration is in lints.toml, but that isn’t supported by
 // cargo-geiger, and it only supports deny, not forbid.
+//
+// Also, we use unsafe code in the binary to handle timing out.
 #![forbid(unsafe_code)]
 
 use git2::Branch;
@@ -202,8 +204,9 @@ pub fn summarize_repository<W: std::io::Write>(
 /// # Errors
 ///
 /// This will return a [`git2::Error`] if there were problems getting repository
-/// information. This is careful to load all repository information (and thus
-/// encountering any errors) before generating any output.
+/// information. This outputs `repo_state=...` last, and does no error handling
+/// after printing `repo_state`. Other variables may be outputted before an
+/// error is returned.
 ///
 /// # Panics
 ///
@@ -213,25 +216,42 @@ pub fn summarize_opened_repository<W: std::io::Write>(
     out: &ShellWriter<W>,
     repository: &mut Repository,
 ) -> Result<(), git2::Error> {
-    let state = time("repository.state()", || repository.state());
-    let workdir = display_option(
-        time("repository.workdir()", || repository.workdir())
-            .map(Path::display),
+    out.write_var(
+        "repo_workdir",
+        display_option(
+            time("repository.workdir()", || repository.workdir())
+                .map(Path::display),
+        ),
     );
-    let empty = time("repository.is_empty()", || repository.is_empty())?;
-    let bare = time("repository.is_bare()", || repository.is_bare());
-    let head = &time("head_info(repository)", || head_info(repository));
-    let changes =
-        &time("count_changes(repository)", || count_changes(repository))?;
-    let stash = time("count_stash(repository)", || count_stash(repository))?;
 
-    out.write_var_debug("repo_state", state);
-    out.write_var("repo_workdir", workdir);
-    out.write_var("repo_empty", empty);
-    out.write_var("repo_bare", bare);
-    out.group("head").write_vars(head);
-    out.write_vars(changes);
-    out.write_var("stash_count", stash);
+    out.write_var(
+        "repo_empty",
+        time("repository.is_empty()", || repository.is_empty())?,
+    );
+
+    out.write_var(
+        "repo_bare",
+        time("repository.is_bare()", || repository.is_bare()),
+    );
+
+    out.group("head")
+        .write_vars(&time("head_info(repository)", || head_info(repository)));
+
+    out.write_vars(&time("count_changes(repository)", || {
+        count_changes(repository)
+    })?);
+
+    out.write_var(
+        "stash_count",
+        time("count_stash(repository)", || count_stash(repository))?,
+    );
+
+    // repo_state is used to report an error (including timeout), so it needs to
+    // be printed last.
+    out.write_var_debug(
+        "repo_state",
+        time("repository.state()", || repository.state()),
+    );
 
     Ok(())
 }

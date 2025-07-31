@@ -99,7 +99,6 @@ git_prompt () {
 
 ```
 ~/projects/git-status-vars ❯ git-status-vars
-repo_state=Clean
 repo_workdir=/Users/daniel/projects/git-status-vars/
 repo_empty=false
 repo_bare=false
@@ -117,6 +116,7 @@ unstaged_count=0
 staged_count=0
 conflicted_count=0
 stash_count=0
+repo_state=Clean
 ~/projects/git-status-vars ❯ cd /
 / ❯ git-status-vars
 repo_state=NotFound
@@ -128,6 +128,27 @@ repo_state=NotFound
 is fast enough that the difference will not usually be perceptible. On my laptop
 `git-status-vars` typically runs in around 8 ms whereas the fallback code
 involving multiple calls to `git` takes around 25 ms.
+
+By default, `git-status-vars` times out after 1 second. It will output as much
+information about the repository as it can, and then it will output
+`repo_state=Error`. Example output:
+
+```
+repo_workdir=/Users/daniel/personal/projects/git-status-vars/
+repo_empty=false
+repo_bare=false
+head_ref_length=1
+head_ref1_name=refs/heads/timeout
+head_ref1_short=timeout
+head_ref1_kind=direct
+head_ref1_error=''
+head_hash=768535e06fe7255908ea0b16c47b6b676b86b6af
+head_ahead=2
+head_behind=3
+head_upstream_error=''
+repo_state=Error
+repo_error='Timed out'
+```
 
 I have not tested this on large repositories.
 

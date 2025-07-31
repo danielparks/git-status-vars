@@ -116,7 +116,6 @@ pub fn make_commit(root: &Path, repo: &str, n: u8) {
 ///     &root,
 ///     "repo"
 ///     r#"
-///     repo_state=Clean
 ///     repo_workdir=@REPO@/
 ///     repo_empty=false
 ///     repo_bare=false
@@ -128,6 +127,7 @@ pub fn make_commit(root: &Path, repo: &str, n: u8) {
 ///     head_hash=@HASH@
 ///     . . .
 ///     stash_count=0
+///     repo_state=Clean
 ///     "#,
 /// );
 /// ```
