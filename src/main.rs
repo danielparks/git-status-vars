@@ -20,6 +20,10 @@ struct Params {
     /// Print timing information to stderr
     #[clap(short, long)]
     pub verbose: bool,
+
+    /// Timeout in seconds (0 means no timeout)
+    #[clap(short, long, default_value = "1")]
+    pub timeout: u32,
 }
 
 fn main() {
@@ -36,6 +40,10 @@ fn main() {
         })
         .compact()
         .init();
+
+    if params.timeout != 0 {
+        nix::unistd::alarm::set(params.timeout);
+    }
 
     if params.repositories.is_empty() {
         summarize_repository(&out, Repository::open_from_env());
