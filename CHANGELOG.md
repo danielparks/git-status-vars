@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Add `--timeout` option, which defaults to 1 second. `git-status-vars` will now
+  output as much repository information as it can, then end with:
+
+      repo_state=Error
+      repo_error='Timed out'
+
 ## Release 1.1.1 (2025-02-12)
 
 * Bump version to fix release workflow.

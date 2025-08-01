@@ -28,7 +28,6 @@ fn empty() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=true
         repo_bare=false
@@ -46,6 +45,7 @@ fn empty() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -63,7 +63,6 @@ fn empty_untracked() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=true
         repo_bare=false
@@ -81,6 +80,7 @@ fn empty_untracked() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -99,7 +99,6 @@ fn empty_added() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=true
         repo_bare=false
@@ -117,6 +116,7 @@ fn empty_added() {
         staged_count=1
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -136,7 +136,6 @@ fn empty_untracked_added() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=true
         repo_bare=false
@@ -154,6 +153,7 @@ fn empty_untracked_added() {
         staged_count=1
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -171,7 +171,6 @@ fn commit() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -189,6 +188,7 @@ fn commit() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -207,7 +207,6 @@ fn commit_delete() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -225,6 +224,7 @@ fn commit_delete() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -243,7 +243,6 @@ fn commit_delete_staged() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -261,6 +260,7 @@ fn commit_delete_staged() {
         staged_count=1
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -279,7 +279,6 @@ fn commit_modified() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -297,6 +296,7 @@ fn commit_modified() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -316,7 +316,6 @@ fn commit_modified_staged() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -334,6 +333,7 @@ fn commit_modified_staged() {
         staged_count=1
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -353,7 +353,6 @@ fn detached() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -367,6 +366,7 @@ fn detached() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -385,7 +385,6 @@ fn branch() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -403,6 +402,7 @@ fn branch() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -427,7 +427,6 @@ fn sym_ref() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -449,6 +448,7 @@ fn sym_ref() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -470,7 +470,6 @@ fn tag() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -484,6 +483,7 @@ fn tag() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -507,7 +507,6 @@ fn cherry_pick() {
         &root,
         "repo",
         r#"
-        repo_state=CherryPick
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -525,6 +524,7 @@ fn cherry_pick() {
         staged_count=0
         conflicted_count=2
         stash_count=0
+        repo_state=CherryPick
         "#,
     );
 }
@@ -550,7 +550,6 @@ fn cherry_pick_staged() {
         &root,
         "repo",
         r#"
-        repo_state=CherryPick
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -568,6 +567,7 @@ fn cherry_pick_staged() {
         staged_count=1
         conflicted_count=1
         stash_count=0
+        repo_state=CherryPick
         "#,
     );
 }
@@ -594,7 +594,6 @@ fn cherry_pick_unstaged() {
         &root,
         "repo",
         r#"
-        repo_state=CherryPick
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -612,6 +611,7 @@ fn cherry_pick_unstaged() {
         staged_count=0
         conflicted_count=1
         stash_count=0
+        repo_state=CherryPick
         "#,
     );
 }
@@ -635,7 +635,6 @@ fn conflict() {
         &root,
         "repo",
         r#"
-        repo_state=Merge
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -653,6 +652,7 @@ fn conflict() {
         staged_count=0
         conflicted_count=2
         stash_count=0
+        repo_state=Merge
         "#,
     );
 }
@@ -671,7 +671,6 @@ fn bare() {
         &root,
         "bare",
         r#"
-        repo_state=Clean
         repo_workdir=''
         repo_empty=false
         repo_bare=true
@@ -689,6 +688,7 @@ fn bare() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         "#,
     );
 }
@@ -708,7 +708,6 @@ fn ahead_1() {
         &root,
         "clone",
         r"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -726,6 +725,7 @@ fn ahead_1() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         ",
     );
 }
@@ -747,7 +747,6 @@ fn ahead_1_behind_1() {
         &root,
         "clone",
         r"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -765,6 +764,7 @@ fn ahead_1_behind_1() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         ",
     );
 }
@@ -785,7 +785,6 @@ fn behind_1() {
         &root,
         "clone",
         r"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -803,6 +802,7 @@ fn behind_1() {
         staged_count=0
         conflicted_count=0
         stash_count=0
+        repo_state=Clean
         ",
     );
 }
@@ -822,7 +822,6 @@ fn stashed_1() {
         &root,
         "repo",
         r#"
-        repo_state=Clean
         repo_workdir=@REPO@/
         repo_empty=false
         repo_bare=false
@@ -840,6 +839,7 @@ fn stashed_1() {
         staged_count=0
         conflicted_count=0
         stash_count=1
+        repo_state=Clean
         "#,
     );
 }
