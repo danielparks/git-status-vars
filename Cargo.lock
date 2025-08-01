@@ -272,6 +272,7 @@ dependencies = [
  "clap",
  "duct",
  "git2",
+ "libc",
  "nix",
  "pretty_assertions",
  "regex",

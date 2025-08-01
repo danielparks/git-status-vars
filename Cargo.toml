@@ -16,6 +16,7 @@ rust-version = "1.74.1"
 [dependencies]
 clap = { version = "4.5.23", features = ["derive"] }
 git2 = { version = "0.20.0", default-features = false }
+libc = "0.2.174"
 nix = { version = "0.30.1", features = ["signal"] }
 shell-words = "1.1.0"
 tracing = "0.1.41"
@@ -33,7 +34,7 @@ target-test-dir = "0.3.0"
 workspace = true
 
 [workspace.lints.rust]
-unsafe_code = "forbid"
+unsafe_code = "allow"
 missing_docs = "warn"
 
 [workspace.lints.clippy]
@@ -48,9 +49,9 @@ assertions_on_result_states = "warn"
 dbg_macro = "warn"
 default_union_representation = "warn"
 empty_structs_with_brackets = "warn"
-filetype_is_file = "warn" # maybe?
+filetype_is_file = "warn"               # maybe?
 fn_to_numeric_cast_any = "warn"
-format_push_string = "warn" # maybe? alternative is fallible.
+format_push_string = "warn"             # maybe? alternative is fallible.
 get_unwrap = "warn"
 impl_trait_in_params = "warn"
 integer_division = "warn"
