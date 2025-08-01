@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## main branch
+
 ## Release 1.2.0 (2025-08-01)
 
 * Add `--timeout` option, which defaults to 1 second. `git-status-vars` will now
