@@ -383,7 +383,9 @@ pub fn count_changes(
     options
         .show(StatusShow::IndexAndWorkdir)
         .include_untracked(true)
-        .exclude_submodules(true);
+        .exclude_submodules(true)
+        .no_refresh(true)
+        .update_index(false);
     let statuses = repository.statuses(Some(&mut options))?;
 
     let mut counters: [usize; 4] = [0; 4];
