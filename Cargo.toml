@@ -49,9 +49,9 @@ assertions_on_result_states = "warn"
 dbg_macro = "warn"
 default_union_representation = "warn"
 empty_structs_with_brackets = "warn"
-filetype_is_file = "warn"               # maybe?
+filetype_is_file = "warn" # maybe?
 fn_to_numeric_cast_any = "warn"
-format_push_string = "warn"             # maybe? alternative is fallible.
+format_push_string = "warn" # maybe? alternative is fallible.
 get_unwrap = "warn"
 impl_trait_in_params = "warn"
 integer_division = "warn"
@@ -78,6 +78,7 @@ let_underscore_untyped = "allow"
 manual_string_new = "allow"
 map_unwrap_or = "allow"
 module_name_repetitions = "allow"
+unnecessary_debug_formatting = "allow" # display() doesn’t escape invalid chars
 
 # Nursery exceptions
 option_if_let_else = "allow"
