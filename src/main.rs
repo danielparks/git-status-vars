@@ -5,12 +5,12 @@ use clap::{CommandFactory, Parser};
 use git2::Repository;
 use git_status_vars::{summarize_repository, ShellWriter};
 use nix::sys::signal::{
-    sigaction, SaFlags, SigAction, SigHandler, SigSet, Signal,
+    kill, sigaction, SaFlags, SigAction, SigHandler, SigSet, Signal,
 };
-use nix::unistd::write;
-use std::io;
+use nix::unistd::{fork, getpid, write, ForkResult, Pid};
 use std::path::PathBuf;
 use std::time::Duration;
+use std::{io, thread};
 
 /// Parameters to configure executable.
 #[derive(Debug, clap::Parser)]
@@ -27,26 +27,23 @@ struct Params {
     #[clap(short, long)]
     pub verbose: bool,
 
-    /// Timeout. May be a number of seconds, e.g "1.5", or a string like "1s",
-    /// "200ms", or "2s 50ms".
+    /// Timeout:
+    ///
+    ///  - A number of seconds like "1.5".
+    ///  - A duration like "1s", "200ms", or "2s 50ms".
+    ///  - "none", 0, or "" for no timeout.
     #[clap(
         short,
         long,
-        default_value = "1s",
+        default_value = "500ms",
         value_parser = parse_duration,
         allow_hyphen_values = true, // Better error message.
     )]
-    pub timeout: Option<Duration>,
+    pub timeout: Duration,
 }
 
 fn main() {
     let params = Params::parse();
-    if let Some(duration) = params.timeout {
-        install_timeout(duration);
-    }
-
-    let out = ShellWriter::with_prefix(params.prefix.unwrap_or_default());
-
     tracing_subscriber::fmt()
         .with_writer(io::stderr)
         .with_target(false)
@@ -57,6 +54,13 @@ fn main() {
         })
         .compact()
         .init();
+
+    // Kludge. Clap doesn’t let a value parser return `Option<...>`:
+    // https://github.com/clap-rs/clap/discussions/5320
+    let child = (params.timeout == Duration::ZERO)
+        .then(|| install_timeout(params.timeout));
+
+    let out = ShellWriter::with_prefix(params.prefix.unwrap_or_default());
 
     if params.repositories.is_empty() {
         summarize_repository(&out, Repository::open_from_env());
@@ -71,11 +75,23 @@ fn main() {
             summarize_repository(repo_out, Repository::open(repo_path));
         }
     }
+
+    if let Some(child) = child {
+        tracing::debug!("Killing child {child} used for timeout");
+        // Ignore errors; the child will die on its own eventually.
+        let _ = kill(child, Signal::SIGTERM);
+    }
 }
 
 /// Parse a duration from a parameter.
 fn parse_duration(input: &str) -> Result<Duration, clap::Error> {
     let input = input.trim();
+
+    if input.is_empty() || input == "0" || input.to_lowercase() == "none" {
+        // Kludge. Clap doesn’t let a value parser return `Option<...>`:
+        // https://github.com/clap-rs/clap/discussions/5320
+        return Ok(Duration::ZERO);
+    }
 
     if input.starts_with('-') {
         Err(Params::command()
@@ -101,12 +117,7 @@ fn parse_duration(input: &str) -> Result<Duration, clap::Error> {
 /// too long (more than `timeout` seconds).
 ///
 /// [`alarm()`]: https://man7.org/linux/man-pages/man2/alarm.2.html
-fn install_timeout(timeout: Duration) {
-    if timeout == Duration::ZERO {
-        // FIXME? depreciate and warn user?
-        return;
-    }
-
+fn install_timeout(timeout: Duration) -> Pid {
     let alarm_action = SigAction::new(
         SigHandler::Handler(sigalrm_handler),
         SaFlags::empty(),
@@ -121,7 +132,29 @@ fn install_timeout(timeout: Duration) {
         let _ = sigaction(Signal::SIGALRM, &alarm_action);
     }
 
-    nix::unistd::alarm::set(timeout.as_secs().try_into().unwrap());
+    let parent = getpid();
+
+    // Safety: this is not a multi-threaded application, which is the only issue
+    // mentioned in the `nix::unistd::fork()` docs.
+    let child = match unsafe { fork() } {
+        Ok(ForkResult::Parent { child, .. }) => child,
+        Ok(ForkResult::Child) => {
+            // Not multithreaded, so non-async-safe syscalls are fine to use.
+            thread::sleep(timeout);
+
+            // Ignore errors. Most likely the parent process already exited.
+            let _ = kill(parent, Signal::SIGALRM);
+
+            // Don't run atexit handlers since this is the child process.
+            // Safety: libc has no docs. Not multithreaded, so no issues there.
+            unsafe {
+                libc::_exit(0);
+            }
+        }
+        Err(error) => panic!("Could not fork child for timeout: {error}"),
+    };
+    tracing::debug!("Forked child {child} to send SIGALRM after {timeout:?}");
+    child
 }
 
 /// Signal handler for SIGALRM (for timeout).

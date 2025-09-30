@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Update `--timeout` to support sub-second timeouts; change the default timeout
+  to 500ms.
+
 ## Release 1.2.0 (2025-08-01)
 
 * Add `--timeout` option, which defaults to 1 second. `git-status-vars` will now
