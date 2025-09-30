@@ -119,6 +119,8 @@ pub trait ShellVars {
 
 /// Quote a value for safe shell insertion.
 ///
+/// This is just a wrapper around [`shell_words::quote()`].
+///
 /// ```rust
 /// use git_status_vars::shell_quote;
 /// assert_eq!(shell_quote("a $b `c`\nd"), "'a $b `c`\nd'");
@@ -128,6 +130,8 @@ pub fn shell_quote<V: Display>(value: V) -> String {
 }
 
 /// Format a value with [`Debug`] and quote it for safe shell insertion.
+///
+/// This is mostly a wrapper around [`shell_words::quote()`].
 pub fn shell_quote_debug<V: Debug>(value: V) -> String {
     shell_words::quote(&format!("{value:?}")).into()
 }
