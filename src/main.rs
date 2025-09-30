@@ -1,6 +1,7 @@
 //! git-status-vars executable.
 
-use clap::Parser;
+use clap::error::ErrorKind;
+use clap::{CommandFactory, Parser};
 use git2::Repository;
 use git_status_vars::{summarize_repository, ShellWriter};
 use nix::sys::signal::{
@@ -9,6 +10,7 @@ use nix::sys::signal::{
 use nix::unistd::write;
 use std::io;
 use std::path::PathBuf;
+use std::time::Duration;
 
 /// Parameters to configure executable.
 #[derive(Debug, clap::Parser)]
@@ -25,14 +27,23 @@ struct Params {
     #[clap(short, long)]
     pub verbose: bool,
 
-    /// Timeout in seconds (0 means no timeout)
-    #[clap(short, long, default_value = "1")]
-    pub timeout: u32,
+    /// Timeout. May be a number of seconds, e.g "1.5", or a string like "1s",
+    /// "200ms", or "2s 50ms".
+    #[clap(
+        short,
+        long,
+        default_value = "1s",
+        value_parser = parse_duration,
+        allow_hyphen_values = true, // Better error message.
+    )]
+    pub timeout: Option<Duration>,
 }
 
 fn main() {
     let params = Params::parse();
-    install_timeout(params.timeout);
+    if let Some(duration) = params.timeout {
+        install_timeout(duration);
+    }
 
     let out = ShellWriter::with_prefix(params.prefix.unwrap_or_default());
 
@@ -62,14 +73,37 @@ fn main() {
     }
 }
 
+/// Parse a duration from a parameter.
+fn parse_duration(input: &str) -> Result<Duration, clap::Error> {
+    let input = input.trim();
+
+    if input.starts_with('-') {
+        Err(Params::command()
+            .error(ErrorKind::InvalidValue, "duration cannot be negative"))
+    } else if input.chars().all(|c| c.is_ascii_digit()) {
+        // Input is all numbers, so assume it’s seconds.
+        input
+            .parse::<u64>()
+            .map(Duration::from_secs)
+            .map_err(|error| {
+                Params::command().error(ErrorKind::InvalidValue, error)
+            })
+    } else {
+        duration_str::parse(input).map_err(|error| {
+            Params::command().error(ErrorKind::InvalidValue, error)
+        })
+    }
+}
+
 /// Set up the timeout.
 ///
 /// This uses [`alarm()`] and a signal handler to kill this process if it takes
 /// too long (more than `timeout` seconds).
 ///
 /// [`alarm()`]: https://man7.org/linux/man-pages/man2/alarm.2.html
-fn install_timeout(timeout: u32) {
-    if timeout == 0 {
+fn install_timeout(timeout: Duration) {
+    if timeout == Duration::ZERO {
+        // FIXME? depreciate and warn user?
         return;
     }
 
@@ -87,7 +121,7 @@ fn install_timeout(timeout: u32) {
         let _ = sigaction(Signal::SIGALRM, &alarm_action);
     }
 
-    nix::unistd::alarm::set(timeout);
+    nix::unistd::alarm::set(timeout.as_secs().try_into().unwrap());
 }
 
 /// Signal handler for SIGALRM (for timeout).
