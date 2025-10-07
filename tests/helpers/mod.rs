@@ -137,7 +137,7 @@ pub fn assert_git_status_vars(root: &Path, repo: &str, expected: &str) {
     let output = re.replace_all(&output, "_hash=@HASH@");
 
     let expected = strip_indent(expected)
-        .replace("@REPO@", &root.join(repo).display().to_string());
+        .replace("@REPO@", &path_to_string(&root.join(repo)));
     assert_str_eq!(expected, output);
 }
 
@@ -183,4 +183,17 @@ pub fn strip_indent(input: &str) -> String {
             }
         })
         .unwrap_or_else(|| input.to_owned())
+}
+
+/// Convert a [`Path`] to a [`String`], normalizing separators.
+///
+/// This ensures that path separators are all '/'.
+fn path_to_string(path: &Path) -> String {
+    if std::path::MAIN_SEPARATOR == '/' {
+        path.display().to_string()
+    } else {
+        path.display()
+            .to_string()
+            .replace(std::path::MAIN_SEPARATOR, "/")
+    }
 }

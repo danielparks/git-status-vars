@@ -10,7 +10,13 @@ on:
 jobs:
   clippy:
     name: cargo clippy
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+          - os: macos-latest
 
     steps:
       - uses: actions/checkout@v5
@@ -46,7 +52,13 @@ jobs:
 
   msrv:
     name: cargo msrv
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+          - os: macos-latest
 
     steps:
       - uses: actions/checkout@v5
@@ -58,7 +70,13 @@ jobs:
 
   test:
     name: cargo test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+          - os: macos-latest
 
     steps:
       - uses: actions/checkout@v5

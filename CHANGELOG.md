@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
   to 500ms.
 * Reorganize variables printed slightly to leave the slowest information for
   last (changes from upstream).
+* Remove `--timeout` on Windows since it relies on non-Windows code that breaks
+  the build.
+* Add automated PR checks for Windows.
 
 ## Release 1.2.0 (2025-08-01)
 
