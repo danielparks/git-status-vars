@@ -57,7 +57,7 @@ fn main() {
 
     // Kludge. Clap doesn’t let a value parser return `Option<...>`:
     // https://github.com/clap-rs/clap/discussions/5320
-    let child = (params.timeout == Duration::ZERO)
+    let child = (params.timeout != Duration::ZERO)
         .then(|| install_timeout(params.timeout));
 
     let out = ShellWriter::with_prefix(params.prefix.unwrap_or_default());
