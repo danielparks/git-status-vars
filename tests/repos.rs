@@ -40,11 +40,11 @@ fn empty() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -9, klass: 4, message: "reference '\''refs/heads/main'\'' not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -75,11 +75,11 @@ fn empty_untracked() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -9, klass: 4, message: "reference '\''refs/heads/main'\'' not found" }'
+        stash_count=0
         untracked_count=1
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -111,11 +111,11 @@ fn empty_added() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -9, klass: 4, message: "reference '\''refs/heads/main'\'' not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=1
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -148,11 +148,11 @@ fn empty_untracked_added() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -9, klass: 4, message: "reference '\''refs/heads/main'\'' not found" }'
+        stash_count=0
         untracked_count=1
         unstaged_count=0
         staged_count=1
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -183,11 +183,11 @@ fn commit() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -219,11 +219,11 @@ fn commit_delete() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=1
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -255,11 +255,11 @@ fn commit_delete_staged() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=1
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -291,11 +291,11 @@ fn commit_modified() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=1
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -328,11 +328,11 @@ fn commit_modified_staged() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=1
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -361,11 +361,11 @@ fn detached() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -1, klass: 3, message: "reference '\''HEAD'\'' is not a local branch." }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -397,11 +397,11 @@ fn branch() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.branch.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -443,11 +443,11 @@ fn sym_ref() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -478,11 +478,11 @@ fn tag() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -1, klass: 3, message: "reference '\''HEAD'\'' is not a local branch." }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -519,11 +519,11 @@ fn cherry_pick() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=2
-        stash_count=0
         repo_state=CherryPick
         "#,
     );
@@ -562,11 +562,11 @@ fn cherry_pick_staged() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=1
         conflicted_count=1
-        stash_count=0
         repo_state=CherryPick
         "#,
     );
@@ -606,11 +606,11 @@ fn cherry_pick_unstaged() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=1
         staged_count=0
         conflicted_count=1
-        stash_count=0
         repo_state=CherryPick
         "#,
     );
@@ -647,11 +647,11 @@ fn conflict() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=2
-        stash_count=0
         repo_state=Merge
         "#,
     );
@@ -683,11 +683,11 @@ fn bare() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         "#,
     );
@@ -720,11 +720,11 @@ fn ahead_1() {
         head_ahead=1
         head_behind=0
         head_upstream_error=''
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         ",
     );
@@ -759,11 +759,11 @@ fn ahead_1_behind_1() {
         head_ahead=1
         head_behind=1
         head_upstream_error=''
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         ",
     );
@@ -797,11 +797,11 @@ fn behind_1() {
         head_ahead=0
         head_behind=1
         head_upstream_error=''
+        stash_count=0
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=0
         repo_state=Clean
         ",
     );
@@ -834,11 +834,11 @@ fn stashed_1() {
         head_ahead=''
         head_behind=''
         head_upstream_error='Error { code: -3, klass: 7, message: "config value '\''branch.main.remote'\'' was not found" }'
+        stash_count=1
         untracked_count=0
         unstaged_count=0
         staged_count=0
         conflicted_count=0
-        stash_count=1
         repo_state=Clean
         "#,
     );

@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 * Update `--timeout` to support sub-second timeouts; change the default timeout
   to 500ms.
+* Reorganize variables printed slightly to leave the slowest information for
+  last (changes from upstream).
 
 ## Release 1.2.0 (2025-08-01)
 

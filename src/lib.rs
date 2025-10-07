@@ -237,14 +237,14 @@ pub fn summarize_opened_repository<W: std::io::Write>(
     out.group("head")
         .write_vars(&time("head_info(repository)", || head_info(repository)));
 
-    out.write_vars(&time("count_changes(repository)", || {
-        count_changes(repository)
-    })?);
-
     out.write_var(
         "stash_count",
         time("count_stash(repository)", || count_stash(repository))?,
     );
+
+    out.write_vars(&time("count_changes(repository)", || {
+        count_changes(repository)
+    })?);
 
     // repo_state is used to report an error (including timeout), so it needs to
     // be printed last.

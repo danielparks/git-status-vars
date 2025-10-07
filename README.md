@@ -111,11 +111,11 @@ head_hash=2df6b768e60fbf899d8c8dc4a20385f30ee5da24
 head_ahead=0
 head_behind=0
 head_upstream_error=''
+stash_count=0
 untracked_count=0
 unstaged_count=0
 staged_count=0
 conflicted_count=0
-stash_count=0
 repo_state=Clean
 ~/projects/git-status-vars ❯ cd /
 / ❯ git-status-vars
