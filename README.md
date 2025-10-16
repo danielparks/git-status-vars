@@ -129,9 +129,9 @@ is fast enough that the difference will not usually be perceptible. On my laptop
 `git-status-vars` typically runs in around 8 ms whereas the fallback code
 involving multiple calls to `git` takes around 25 ms.
 
-By default, `git-status-vars` times out after 1 second. It will output as much
-information about the repository as it can, and then it will output
-`repo_state=Error`. Example output:
+By default, `git-status-vars` times out after 0.5 seconds. It will output as
+much information about the repository as it can, followed by `repo_state=Error`.
+Example output:
 
 ```
 repo_workdir=/Users/daniel/personal/projects/git-status-vars/
