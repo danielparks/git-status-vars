@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## main branch
+
 ## Release 1.3.0 (2025-10-16)
 
 * Update `--timeout` to support sub-second timeouts; change the default timeout
