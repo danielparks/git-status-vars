@@ -66,7 +66,7 @@ git_prompt () {
     ref=${head_hash:0:8}
   fi
 
-  print -Pn "%F{$fg_color}${ref}%f "
+  print -nP "%F{$fg_color}${ref}%f "
 }
 ```
 
@@ -91,7 +91,7 @@ git_prompt () {
   ref=$(git symbolic-ref --short HEAD 2>/dev/null) \
     || ref="$(git show-ref --head --hash --abbrev HEAD 2>/dev/null | head -n1)"
 
-  print -Pn "%F{$fg_color}${ref}%f "
+  print -nP "%F{$fg_color}${ref}%f "
 }
 ```
 

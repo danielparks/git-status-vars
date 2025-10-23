@@ -7,6 +7,9 @@ on:
       - main
   pull_request:
 
+env:
+  CLICOLOR: 1
+
 jobs:
   clippy:
     name: cargo clippy
@@ -83,3 +86,11 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - run: cargo build --tests --all-features
       - run: cargo test --all-features
+
+  typos:
+    name: typos
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: crate-ci/typos@v1.38.1
