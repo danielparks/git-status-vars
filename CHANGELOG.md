@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## main branch
 
+* Enable [“fat” link time optimization][lto] for release builds. On macOS, the
+  resulting binary went from 1.3 MB to 1.0 MB.
+
+[lto]: https://doc.rust-lang.org/rustc/codegen-options/index.html#lto
+
 ## Release 1.3.0 (2025-10-16)
 
 * Update `--timeout` to support sub-second timeouts; change the default timeout
