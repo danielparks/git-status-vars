@@ -11,14 +11,14 @@ use std::time::Duration;
 #[derive(Debug, clap::Parser)]
 #[clap(version, about)]
 pub struct Params {
-    /// The repositories to summarize
+    /// The repositories to summarize.
     pub repositories: Vec<PathBuf>,
 
-    /// Prefix for each shell var line (e.g. 'local ')
+    /// Prefix for each shell var line (e.g. 'local ').
     #[clap(long, short = 'p')]
     pub prefix: Option<String>,
 
-    /// Print timing information to stderr
+    /// Print timing information to stderr.
     #[clap(short, long)]
     pub verbose: bool,
 
