@@ -25,7 +25,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: danielparks/github-actions/create-release@main
+      - uses: danielparks/github-actions/create-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -63,7 +63,7 @@ jobs:
           - target: s390x-unknown-linux-gnu
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     steps:
-      - uses: danielparks/github-actions/create-release-artifacts@main
+      - uses: danielparks/github-actions/create-release-artifacts@v1
         with:
           target: ${{ matrix.target }}
           token: ${{ secrets.GITHUB_TOKEN }}
