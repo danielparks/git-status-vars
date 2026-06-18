@@ -1,7 +1,6 @@
 //! Test the test helpers.
 
-// We don’t use everything in helpers.
-#[allow(dead_code)]
+#[expect(dead_code, reason = "helpers has code to support other modules")]
 mod helpers;
 
 #[test]

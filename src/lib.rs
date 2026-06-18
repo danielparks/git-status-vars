@@ -4,7 +4,7 @@
 //! The primary entrance to this code is [`summarize_repository()`]. It opens a
 //! [`Repository`], then calls [`summarize_opened_repository()`] on it.
 //!
-//! Currently the minimum supported Rust version (MSRV) is **1.74.1**.
+//! Currently the minimum supported Rust version (MSRV) is **1.87**.
 //!
 //! # Versioning
 //!
@@ -137,8 +137,10 @@ impl ShellVars for Head {
         let trail = self.trail.get(1..).unwrap_or(&[]);
         out.write_var("ref_length", trail.len());
         for (i, reference) in trail.iter().enumerate() {
-            // self.trail is actually 1 longer, so i + 1 always fits.
-            #[allow(clippy::arithmetic_side_effects)]
+            #[expect(
+                clippy::arithmetic_side_effects,
+                reason = "self.trail is actually 1 longer, so i + 1 always fits"
+            )]
             out.group_n("ref", i + 1).write_vars(reference);
         }
         out.write_var("hash", &self.hash);
@@ -262,7 +264,6 @@ pub fn summarize_opened_repository<W: std::io::Write>(
 ///
 /// This may panic if it can’t resolve a symbolic reference to a symbolic
 /// target.
-#[allow(clippy::similar_names)]
 #[must_use]
 pub fn head_info(repository: &Repository) -> Head {
     let mut current = "HEAD".to_owned();
@@ -309,7 +310,7 @@ pub fn head_info(repository: &Repository) -> Head {
                     .push(Reference::new_with_error(current, "", error));
                 break;
             }
-        };
+        }
     }
 
     match get_upstream_difference(repository) {

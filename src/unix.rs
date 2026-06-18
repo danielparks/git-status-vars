@@ -3,9 +3,9 @@
 //! This is part of the executable, not the library; `unsafe` is allowed.
 
 use nix::sys::signal::{
-    kill, sigaction, SaFlags, SigAction, SigHandler, SigSet, Signal,
+    SaFlags, SigAction, SigHandler, SigSet, Signal, kill, sigaction,
 };
-use nix::unistd::{fork, getpid, write, ForkResult, Pid};
+use nix::unistd::{ForkResult, Pid, fork, getpid, write};
 use std::thread;
 use std::time::Duration;
 

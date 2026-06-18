@@ -41,8 +41,8 @@ pub struct Params {
 /// Parse a duration from a parameter.
 #[cfg(not(windows))]
 fn parse_duration(input: &str) -> Result<Duration, clap::Error> {
-    use clap::error::ErrorKind;
     use clap::CommandFactory;
+    use clap::error::ErrorKind;
 
     let input = input.trim();
 

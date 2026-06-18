@@ -1,8 +1,8 @@
 //! git-status-vars executable.
 
 use clap::Parser;
+use git_status_vars::{ShellWriter, summarize_repository};
 use git2::Repository;
-use git_status_vars::{summarize_repository, ShellWriter};
 use std::io;
 
 mod params;

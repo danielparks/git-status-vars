@@ -7,7 +7,16 @@ All notable changes to this project will be documented in this file.
 * Enable [“fat” link time optimization][lto] for release builds. On macOS, the
   resulting binary went from 1.3 MB to 1.0 MB.
 
+### Security fixes
+
+* Updated [git2] version to avoid two vulnerabilities ([RUSTSEC-2026-0183] and
+  [RUSTSEC-2026-0184]) that likely do not affect git-status-vars. This required
+  bumping the MSRV to 1.87, so I also updated to Rust edition 2024.
+
 [lto]: https://doc.rust-lang.org/rustc/codegen-options/index.html#lto
+[git2]: https://crates.io/crates/git2
+[RUSTSEC-2026-0183]: https://rustsec.org/advisories/RUSTSEC-2026-0183
+[RUSTSEC-2026-0184]: https://rustsec.org/advisories/RUSTSEC-2026-0184
 
 ## Release 1.3.0 (2025-10-16)
 

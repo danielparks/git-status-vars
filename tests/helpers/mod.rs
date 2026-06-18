@@ -169,8 +169,11 @@ pub fn strip_indent(input: &str) -> String {
         .strip_prefix('\n')
         .map(|rest| rest.trim_start_matches(' ')) // Strip first indent.
         .map(|rest| {
-            // Get the length of the "\n   "-like prefix. (This is always safe.)
-            #[allow(clippy::arithmetic_side_effects)]
+            // Get the length of the "\n   "-like prefix.
+            #[expect(
+                clippy::arithmetic_side_effects,
+                reason = "rest always shorter than input"
+            )]
             let prefix_len = input.len() - rest.len();
             if prefix_len > 1 {
                 // There was an indent. Replace all newline plus indent
