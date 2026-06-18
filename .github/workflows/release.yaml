@@ -1,13 +1,16 @@
 # Mostly copied from https://github.com/taiki-e/cargo-hack/blob/main/.github/workflows/release.yml
 name: Release
 
-permissions:
-  contents: read
-
 on:
   push:
     tags:
       - v*.*.*
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   CARGO_INCREMENTAL: 0
@@ -21,22 +24,24 @@ env:
 jobs:
   create-release:
     if: github.repository_owner == 'danielparks'
-    runs-on: ubuntu-latest
+    name: Create
+    timeout-minutes: 5
     permissions:
-      contents: write
+      contents: write # To create release
+    runs-on: ubuntu-latest
     steps:
       - uses: danielparks/github-actions/create-release@e6897e1bad61baaecaf6683db8a69747ddcf40f1 # v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   upload-assets:
-    name: ${{ matrix.target }}
     if: github.repository_owner == 'danielparks'
+    name: ${{ matrix.target }}
     needs:
       - create-release
     timeout-minutes: 60
     permissions:
-      contents: write
+      contents: write # To upload artifacts to release
     strategy:
       matrix:
         include:
@@ -67,4 +72,3 @@ jobs:
         with:
           target: ${{ matrix.target }}
           token: ${{ secrets.GITHUB_TOKEN }}
-
