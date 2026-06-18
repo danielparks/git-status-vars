@@ -118,14 +118,14 @@ pub struct Head {
 
     /// How many commits are we ahead of upstream?
     ///
-    /// `None` means that there is no upstream, or there is no equivalent branch
-    /// in upstream.
+    /// `None` means that there is no upstream, or there is no equivalent
+    /// branch in upstream.
     pub ahead_of_upstream: Option<usize>,
 
     /// How many commits are we behind upstream?
     ///
-    /// `None` means that there is no upstream, or there is no equivalent branch
-    /// in upstream.
+    /// `None` means that there is no upstream, or there is no equivalent
+    /// branch in upstream.
     pub behind_upstream: Option<usize>,
 
     /// An error encountered trying to calculate differences with upstream.
