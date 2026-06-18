@@ -271,24 +271,34 @@ pub fn head_info(repository: &Repository) -> Head {
         match repository.find_reference(&current) {
             Ok(reference) => match reference.kind() {
                 Some(ReferenceType::Direct) => {
-                    head.trail.push(Reference::direct(display_option(
-                        reference.name(),
-                    )));
+                    head.trail.push(Reference::direct(
+                        reference
+                            .name()
+                            .expect("getting reference name")
+                            .to_owned(),
+                    ));
                     head.hash = display_option(reference.target());
                     break;
                 }
                 Some(ReferenceType::Symbolic) => {
-                    head.trail.push(Reference::symbolic(display_option(
-                        reference.name(),
-                    )));
+                    head.trail.push(Reference::symbolic(
+                        reference
+                            .name()
+                            .expect("getting reference name")
+                            .to_owned(),
+                    ));
                     let target = reference
                         .symbolic_target()
+                        .expect("getting symbolic target")
                         .expect("Symbolic ref should have symbolic target");
                     target.clone_into(&mut current);
                 }
                 None => {
                     head.trail.push(Reference::new(
-                        display_option(reference.name()),
+                        reference
+                            .name()
+                            .expect("getting reference name")
+                            .to_owned(),
                         "unknown",
                     ));
                     break;
