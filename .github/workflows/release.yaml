@@ -30,7 +30,7 @@ jobs:
       contents: write # To create release
     runs-on: ubuntu-latest
     steps:
-      - uses: danielparks/github-actions/create-release@e6897e1bad61baaecaf6683db8a69747ddcf40f1 # v1.0.0
+      - uses: danielparks/github-actions/create-release@2f6c98c73f0a8130d737500b59a0fddf749b484d # v1.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -68,7 +68,7 @@ jobs:
           - target: s390x-unknown-linux-gnu
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     steps:
-      - uses: danielparks/github-actions/create-release-artifacts@e6897e1bad61baaecaf6683db8a69747ddcf40f1 # v1.0.0
+      - uses: danielparks/github-actions/create-release-artifacts@2f6c98c73f0a8130d737500b59a0fddf749b484d # v1.1.1
         with:
           target: ${{ matrix.target }}
           token: ${{ secrets.GITHUB_TOKEN }}

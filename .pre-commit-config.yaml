@@ -20,7 +20,7 @@ repos:
         exclude: "target/"
       - id: no-commit-to-branch
   - repo: https://github.com/crate-ci/typos
-    rev: v1.47.0
+    rev: v1.48.0
     hooks:
       - id: typos
         args: []
@@ -49,6 +49,6 @@ repos:
       - id: cargo fmt
         name: cargo fmt
         language: system
-        entry: cargo fmt --check
+        entry: cargo +nightly fmt --check
         files: (\.rs|rustfmt\.toml)$
         pass_filenames: false
