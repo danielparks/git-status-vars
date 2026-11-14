@@ -438,7 +438,7 @@ pub fn count_changes(
         Status::CONFLICTED,
     ];
 
-    for status in statuses.iter() {
+    for status in &statuses {
         for (i, bits) in buckets.iter().enumerate() {
             if status.status().intersects(*bits) {
                 counters[i] = counters[i].saturating_add(1);
